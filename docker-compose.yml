@@ -1,0 +1,10 @@
+services:
+  agenda_api:
+    build: ./apps/api
+
+  agenda_ui:
+    build: ./apps/ui
+    ports:
+      - "8080:80"
+    depends_on:
+      - agenda_api
