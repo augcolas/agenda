@@ -10,11 +10,15 @@ api:
 
 .PHONY: up
 up:
-	docker compose up -d
+	docker compose -f ./docker-compose.dev.yml up -d
 
 .PHONY: down
 down:
-	docker compose down
+	docker compose -f ./docker-compose.dev.yml down
+
+.PHONY: stop
+stop:
+	docker compose -f ./docker-compose.dev.yml stop
 
 .PHONY: install
 install:
@@ -27,3 +31,4 @@ reset:
 	&& docker rmi $$(docker images -q) \
 	&& docker volume rm $$(docker volume ls -q) \
 	&& docker system prune -a -f
+
