@@ -1,0 +1,30 @@
+/* Day.css */
+.day {
+  border: 1px solid #ccc;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Start from the top */
+  background-color: #f9f9f9;
+  height: 400px; /* Adjust height as necessary */
+}
+
+.date {
+  font-weight: bold;
+  margin-bottom: 10px; /* Space between date and hours */
+}
+
+.hours {
+  height: 300px; /* Fixed height for the hours section */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.hour {
+  border: 1px solid #ccc;
+  text-align: left;
+  width: 100%; /* Full width for hour display */
+  height: 50px;
+  background-color: #e0f7fa; /* Optional background color */
+  padding: 5px; /* Add some padding for better appearance */
+}

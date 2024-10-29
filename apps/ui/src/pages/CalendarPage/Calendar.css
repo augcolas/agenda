@@ -1,0 +1,13 @@
+.calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Ensures the calendar takes the full width */
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 columns for the week */
+  width: 100%; /* Ensures the grid takes full width */
+  margin-top: 10px;
+}
