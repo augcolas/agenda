@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@agenda/tsconfig": "workspace:^",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10"
   },
@@ -24,5 +25,5 @@
     "pnpm --filter api run lint"
   ]
 }
-  
+
 }
