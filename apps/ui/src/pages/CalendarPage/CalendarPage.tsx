@@ -3,47 +3,41 @@ import type React from 'react';
 
 import {useState} from 'react';
 
-import Day from '../../components/Day/Day';
 import './Calendar.css';
+import Day from "../../components/Day/Day";
+import Week from '../../components/Week/Week';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CalendarPage: React.FC = () => {
   const { user } = useAuth();
-
+  const [view, setView] = useState<'day' | 'week'>('day');
   const [currentDate] = useState(new Date());
 
-  // Fonction pour obtenir le début et la fin de la semaine courante
-  const getWeekDays = () => {
-    const weekDays = [];
-    const startOfWeek = new Date(currentDate);
-    const day = currentDate.getDay();
+  // Sample events for the week (replace this with your actual event data)
+  const eventsData = [
+    { date: new Date(currentDate), time: "10:00", description: "Meeting" },
+    { date: new Date(currentDate), time: "10:00", description: "Lunch" },
+    { date: new Date(currentDate), time: "14:00", description: "Project deadline" },
+    // Add more events as needed...
+  ];
 
-    // Si le jour est dimanche, on ajuste pour que lundi soit le premier jour
-    const adjustment = day === 0 ? -6 : 1 - day;
-    startOfWeek.setDate(currentDate.getDate() + adjustment);
-
-    for (let index = 0; index < 7; index++) {
-      const startOfWeekDay = new Date(startOfWeek);
-      startOfWeekDay.setDate(startOfWeek.getDate() + index);
-      weekDays.push(startOfWeekDay);
-    }
-    return weekDays;
-  };
-
-  const renderDays = () => {
-    const weekDays = getWeekDays();
-    return weekDays.map((day, index) => (
-      <Day key={"day-"+index} date={day} />
-    ));
+  const handleViewChange = (newView: 'day' | 'week') => {
+    setView(newView);
   };
 
   return (
     <div className="calendar">
-      {user && <h1>Bonjour {user.firstName} {user.lastName}</h1>}
-      <h2>Semaine du {currentDate.toLocaleDateString()}</h2>
-      <div className="days">
-        {renderDays()}
+      {user && <h1>Welcome, {user.firstName}!</h1>}
+      <div className="view-selector">
+        <button onClick={() => handleViewChange('day')}>Day View</button>
+        <button onClick={() => handleViewChange('week')}>Week View</button>
       </div>
+
+      {view === 'day' ?
+        (<Day date={currentDate} />)
+        :
+        (<Week currentDate={currentDate} events={eventsData} />)
+      }
     </div>
   );
 

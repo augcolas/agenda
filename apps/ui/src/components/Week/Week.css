@@ -1,0 +1,56 @@
+/* Week.css */
+.week-table {
+  display: block;
+  width: 100%;
+  height: 70vh; /* Ensure the table takes the full height */
+  border-collapse: collapse; /* Merge borders */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.week-day-header,
+.hour-header {
+  background-color: #f0f0f0; /* Background color for headers */
+  text-align: center;
+  border: 1px solid #ccc; /* Border for header cells */
+  border-bottom: none; /* Remove bottom border for headers to avoid double lines with tbody */
+}
+
+.hour-header,
+.hour {
+  width: 30px; /* Fixed width for hour header */
+  padding: 10px;
+  border-right: none; /* Remove right border from hour cells */
+}
+
+.hour {
+  text-align: center;
+  background-color: #f0f0f0; /* Background color for hours */
+  border-top: 1px solid #ccc; /* Add a top border for separation */
+}
+
+.event-cell {
+  padding: 10px;
+  border: none; /* Remove border for event cells */
+  height: 100%; /* Make sure the cell height fills the row */
+}
+
+.event {
+  background-color: #e0f7fa; /* Background color for events */
+  margin: 2px 0; /* Space between events */
+  padding: 5px;
+  border-radius: 3px; /* Rounded corners */
+}
+
+/* This will ensure that the table can scroll when content overflows */
+tbody {
+  display: block;
+  height: calc(70vh - 40px); /* Adjust height for the header, set a static height for header */
+  overflow-y: auto; /* Enable scrolling for tbody */
+}
+
+tr {
+  display: table;
+  table-layout: fixed; /* Ensure columns are of fixed size */
+  width: 100%;
+  border-bottom: 1px solid #ccc; /* Add horizontal border to rows */
+}

@@ -8,8 +8,8 @@ interface DayProps {
 }
 
 const Day: React.FC<DayProps> = ({ date }) => {
-  // Generate an array of hours (6 AM to 10 PM)
-  const hours = Array.from({ length: 16 }, (_, index) => 6 + index); // 6 AM to 10 PM
+  // Generate an array of hours (0 AM to 24 PM)
+  const hours = Array.from({ length: 25 }, (_, index) => index);
 
   return (
     <div className="day">
