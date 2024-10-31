@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:ui": "pnpm --filter ui dev",
     "dev:api": "pnpm --filter api start:dev",
+    "dev:jobrunner": "pnpm --filter jobrunner start:dev",
     "prepare": "husky"
   },
   "keywords": [],
@@ -16,13 +17,12 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10"
   },
- "lint-staged": {
-  "apps/ui/**/*.{js,ts,jsx,tsx}": [
-    "pnpm --filter ui run lint"
-  ],
-  "apps/api/**/*.{js,ts,jsx,tsx}": [
-    "pnpm --filter api run lint"
-  ]
-}
-  
+  "lint-staged": {
+    "apps/ui/**/*.{js,ts,jsx,tsx}": [
+      "pnpm --filter ui run lint"
+    ],
+    "apps/api/**/*.{js,ts,jsx,tsx}": [
+      "pnpm --filter api run lint"
+    ]
+  }
 }
