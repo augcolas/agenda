@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-// eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
 
 import { AuthController } from './auth.controller';

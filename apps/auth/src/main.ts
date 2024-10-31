@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
-// eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
 
 import { AppModule } from './app.module';
@@ -15,7 +14,6 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: 'authproto',
-        // eslint-disable-next-line unicorn/prefer-module
         protoPath: join(__dirname, '../node_modules/@agenda/proto/auth.proto'),
         url: '0.0.0.0:3001',
       },
