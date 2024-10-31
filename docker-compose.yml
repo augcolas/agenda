@@ -1,9 +1,13 @@
 services:
   agenda_api:
-    build: ./apps/api
+    build:
+      context: ./
+      dockerfile: ./apps/api/Dockerfile
 
   agenda_ui:
-    build: ./apps/ui
+    build:
+      context: ./
+      dockerfile: ./apps/ui/Dockerfile
     ports:
       - "8080:80"
     depends_on:
