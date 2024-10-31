@@ -18,14 +18,14 @@
 .hour-header,
 .hour {
   width: 30px; /* Fixed width for hour header */
+  height: 30px;
   padding: 10px;
-  border-right: none; /* Remove right border from hour cells */
+  border:none;
 }
 
 .hour {
   text-align: center;
   background-color: #f0f0f0; /* Background color for hours */
-  border-top: 1px solid #ccc; /* Add a top border for separation */
 }
 
 .event-cell {

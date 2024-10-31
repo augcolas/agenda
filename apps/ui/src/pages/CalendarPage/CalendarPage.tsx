@@ -34,7 +34,7 @@ const CalendarPage: React.FC = () => {
       </div>
 
       {view === 'day' ?
-        (<Day date={currentDate} />)
+        (<Day date={currentDate} events={eventsData} />)
         :
         (<Week currentDate={currentDate} events={eventsData} />)
       }
