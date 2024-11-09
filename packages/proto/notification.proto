@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package notificationproto;
+
+service NotificationService {
+  rpc test(empty) returns (text) {}
+  rpc findAll(empty) returns (notificationList) {}
+  rpc findOne(notificationId) returns (notification) {}
+  rpc add(empty) returns (notification) {}
+}
+
+message empty{}
+
+message text {
+  string text = 1;
+}
+
+message notificationList {
+  repeated notification notifications = 1;
+}
+
+message notificationId {
+  string notificationId = 1;
+}
+
+message notification {
+  // string notificationId = 1;
+  // string title = 2;
+  // string body = 3;
+  // string createdAt = 4;
+  // string updatedAt = 5;
+
+  int32 active = 1;
+  int32 completed = 2;
+  int32 delayed = 3;
+  int32 failed = 4;
+  int32 paused = 5;
+  int32 prioritized = 6;
+  int32 waiting = 7;
+}

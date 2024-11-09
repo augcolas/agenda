@@ -3,7 +3,6 @@ jobrunner:
 	@echo "start jobrunner"
 	@pnpm run dev:jobrunner
 
-
 .PHONY : ui
 ui:
 	@echo "start ui"

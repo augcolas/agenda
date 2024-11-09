@@ -3,7 +3,6 @@ import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { JobModule } from './notifications/notification.module';
 
 @Module({
   imports: [
@@ -13,7 +12,9 @@ import { JobModule } from './notifications/notification.module';
         port: Number.parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
-    JobModule,
+    BullModule.registerQueue({
+      name: 'notification',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
