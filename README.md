@@ -5,6 +5,9 @@ Un agenda/calendrier en ligne qui permet aux utilisateurs de créer, modifier, s
 
 From project root:
 
+- Create a .env file from .env.example
+- Run docker containers : ```docker compose --env-file .env -f docker-compose.dev.yml up -d```
+
 - Run front : ```pnpm --filter ui dev```
 - Run Back/API : ```pnpm --filter api start:dev```
 - Run Back/Auth microservice : ```pnpm --filter auth start:dev```
