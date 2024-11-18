@@ -1,7 +1,7 @@
-import eslintNestConfig from '@agenda/eslint-config/nest.js';
+import eslintReactConfig from '@agenda/eslint-config/react.js';
 
 export default [
-  ...eslintNestConfig,
+  ...eslintReactConfig,
   {
     languageOptions: {
       parserOptions: {
