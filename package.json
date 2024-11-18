@@ -17,13 +17,17 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10"
   },
- "lint-staged": {
-  "apps/ui/**/*.{js,ts,jsx,tsx}": [
-    "pnpm --filter ui run lint"
-  ],
-  "apps/api/**/*.{js,ts,jsx,tsx}": [
-    "pnpm --filter api run lint"
-  ]
-}
-
+  "lint-staged": {
+    "apps/ui/**/*.{js,ts,jsx,tsx}": [
+      "pnpm --filter ui run lint"
+    ],
+    "apps/api/**/*.{js,ts,jsx,tsx}": [
+      "pnpm --filter api run lint"
+    ]
+  },
+  "dependencies": {
+    "@nestjs/typeorm": "^10.0.2",
+    "pg": "^8.13.1",
+    "typeorm": "^0.3.20"
+  }
 }
