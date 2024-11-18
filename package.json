@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:ui": "pnpm --filter ui dev",
     "dev:api": "pnpm --filter api start:dev",
+    "dev:auth": "pnpm --filter auth start:dev",
     "prepare": "husky"
   },
   "keywords": [],
@@ -26,6 +27,9 @@
     ]
   },
   "dependencies": {
+    "@nestjs/typeorm": "^10.0.2",
+    "pg": "^8.13.1",
+    "typeorm": "^0.3.20",
     "react-router-dom": "^6.27.0"
   }
 }
