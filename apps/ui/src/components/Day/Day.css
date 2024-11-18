@@ -26,17 +26,10 @@
   background-color: #f0f0f0;
 }
 
-.event-cell {
+.hour-cell {
   padding: 10px;
   border: none;
   height: 100%;
-}
-
-.event {
-  background-color: #e0f7fa;
-  margin: 2px 0;
-  padding: 5px;
-  border-radius: 3px;
 }
 
 tbody {

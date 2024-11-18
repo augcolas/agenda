@@ -2,10 +2,12 @@
 import type React from 'react';
 
 import './Week.css';
+import { type Event } from '../../models/Event';
+import { EventCell } from '../EventCell/EventCell';
 
 interface WeekProps {
   readonly currentDate: Date;
-  readonly events: { date: Date; description: string; time: string }[]; // Events for the week
+  readonly events: Event[];
 }
 
 const Week: React.FC<WeekProps> = ({ currentDate, events }) => {
@@ -47,12 +49,10 @@ const Week: React.FC<WeekProps> = ({ currentDate, events }) => {
         <tr key={hour}>
           <td className="hour">{hour%2 === 0 ? hour+':00' : ''}</td>
           {weekDays.map((day, index) => (
-            <td key={"hour_"+index} className="event-cell">
+            <td key={"hour_"+index} className="hour-cell">
               {events.filter(event => event.date.toDateString() === day.toDateString() && event.time === `${hour}:00`)
                 .map((event, eventIndex) => (
-                  <div key={"event_"+hour+"_"+eventIndex} className="event">
-                    {event.description}
-                  </div>
+                  <EventCell event={event} key={"event_"+hour+"_"+eventIndex} />
                 ))}
             </td>
           ))}
