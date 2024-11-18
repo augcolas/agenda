@@ -1,4 +1,12 @@
 import {
+  addNotification,
+  empty,
+  notification,
+  notificationId,
+  notificationList,
+} from '@agenda/proto/notification';
+import {
+  Body,
   Controller,
   Get,
   Inject,
@@ -10,10 +18,9 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
 interface NotificationService {
-  add(empty): Observable<undefined>;
-  findAll(empty): Observable<undefined>;
-  findOne(id: string): Observable<undefined>;
-  test(empty): Observable<string>;
+  add(data: addNotification): Observable<notification>;
+  findAll(arg0: empty): Observable<notificationList>;
+  findOne(data: notificationId): Observable<notification>;
 }
 
 @Controller('notification')
@@ -30,23 +37,19 @@ export class NotificationController implements OnModuleInit {
     );
   }
 
-  @Get()
-  async test() {
-    return this.notificationService.test('empty');
-  }
-
   @Get('findAll')
   async findAll() {
     return this.notificationService.findAll('empty');
   }
 
-  @Get('findOne/:id')
-  async findOne(@Param('id') id: string) {
-    return this.notificationService.findOne(id);
+  @Get(':id')
+  findOne(@Param('id') id: notificationId['id']) {
+    const job = this.notificationService.findOne({ id });
+    return job;
   }
 
   @Post('add')
-  async add() {
-    return this.notificationService.add('empty');
+  async add(@Body() data: addNotification) {
+    return this.notificationService.add(data);
   }
 }

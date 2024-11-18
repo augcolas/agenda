@@ -1,3 +1,4 @@
+import { addNotification, notificationId } from '@agenda/proto/notification';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
@@ -12,31 +13,18 @@ export class AppController {
     @InjectQueue('notification') private notificationQueue: Queue,
   ) {}
 
-  @GrpcMethod('NotificationService', 'test')
-  test() {
-    return { text: 'jorunner service test' };
-  }
-
   @GrpcMethod('NotificationService', 'findAll')
   async findAll() {
-    console.log('findAll');
-    const notifications = await this.notificationQueue.getJobCounts();
-    console.log(typeof notifications);
-
-    console.log(notifications);
-
-    return notifications;
+    return this.appService.findAll();
   }
 
   @GrpcMethod('NotificationService', 'findOne')
-  async findOne(id: string) {
-    return this.notificationQueue.getJob(id);
+  async findOne(data: notificationId) {
+    return this.appService.findOne(data);
   }
 
   @GrpcMethod('NotificationService', 'add')
-  async addNotification() {
-    return this.notificationQueue.add('notification', {
-      text: 'jobrunner service add',
-    });
+  async add(data: addNotification) {
+    return this.appService.add(data);
   }
 }
