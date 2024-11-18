@@ -1,14 +1,15 @@
 // Day.tsx
-import type React from 'react';
 
 import './Day.css';
+import { type Event } from '../../models/Event';
+import { EventCell } from '../EventCell/EventCell';
 
 interface DayProps {
   readonly date: Date;
-  readonly events: { date: Date; description: string; time: string }[];
+  readonly events: Event[];
 }
 
-const Day: React.FC<DayProps> = ({ date, events }) => {
+const Day = ({ date, events }: DayProps) => {
   const hours = Array.from({ length: 25 }, (_, index) => index);
 
   return (
@@ -26,7 +27,7 @@ const Day: React.FC<DayProps> = ({ date, events }) => {
       {hours.map((hour) => (
         <tr key={hour}>
           <td className="hour">{hour % 2 === 0 ? hour + ':00' : ''}</td>
-          <td className="event-cell">
+          <td className="hour-cell">
             {events
               .filter(
                 (event) =>
@@ -34,9 +35,7 @@ const Day: React.FC<DayProps> = ({ date, events }) => {
                   event.time === `${hour}:00`
               )
               .map((event, eventIndex) => (
-                <div key={"event_" + hour + "_" + eventIndex} className="event">
-                  {event.description}
-                </div>
+                <EventCell key={"event_" + hour + "_" + eventIndex} event={event} />
               ))}
           </td>
         </tr>
