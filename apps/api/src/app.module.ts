@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { SocketModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -12,6 +13,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       envFilePath: '../../.env',
     }),
+    SocketModule,
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
