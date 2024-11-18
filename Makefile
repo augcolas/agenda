@@ -13,6 +13,11 @@ api:
 	@echo "start api"
 	@pnpm run dev:api
 
+.PHONY : proto
+proto:
+	@echo "watch proto"
+	@pnpm run watch:proto
+
 .PHONY: up
 up:
 	docker compose -f ./docker-compose.dev.yml up -d
