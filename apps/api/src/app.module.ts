@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { SocketModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { EventModule } from './event/event.module';
 import { NotificationModule } from './notifications/notification.module';
 import { UserModule } from './user/user.module';
 
@@ -13,6 +15,7 @@ import { UserModule } from './user/user.module';
     ConfigModule.forRoot({
       envFilePath: '../../.env',
     }),
+    SocketModule,
     AuthModule,
     NotificationModule,
     TypeOrmModule.forRoot({
@@ -27,6 +30,7 @@ import { UserModule } from './user/user.module';
       logging: true,
     }),
     UserModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
