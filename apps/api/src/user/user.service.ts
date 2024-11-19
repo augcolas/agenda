@@ -37,10 +37,12 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const existingUser = await this.findOne(id);
-    updateUserDto.password = await bcrypt.hash(
-      updateUserDto.password,
-      +process.env.BCRYPT_PASSWORD_SALT,
-    );
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        +process.env.BCRYPT_PASSWORD_SALT,
+      );
+    }
     const userData = this.userRepository.merge(existingUser, updateUserDto);
     return this.userRepository.save(userData);
   }
