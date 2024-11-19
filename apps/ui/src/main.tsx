@@ -9,6 +9,7 @@ import CalendarPage from './pages/CalendarPage/CalendarPage';
 import Home from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import LogoutPage from './pages/LogoutPage/LogoutPage';
+import SignInPage from './pages/SignInPage/SignInPage';
 
 const Main: React.FC = () => (
   <Routes>
@@ -23,6 +24,7 @@ const Main: React.FC = () => (
     />
     <Route path='/login' element={<LoginPage/>} />
     <Route path="/logout" element={<LogoutPage />} />
+    <Route path="/register" element={<SignInPage />} />
   </Routes>
 );
 
