@@ -12,14 +12,6 @@ const CalendarPage = () => {
   const [view, setView] = useState<'day' | 'week'>('day');
   const [currentDate] = useState(new Date());
 
-  // Sample events for the week (replace this with your actual event data)
-  const eventsData = [
-    { date: new Date(currentDate), time: "10:00", description: "Meeting" },
-    { date: new Date(currentDate), time: "10:00", description: "Lunch" },
-    { date: new Date(currentDate), time: "14:00", description: "Project deadline" },
-    // Add more events as needed...
-  ];
-
   const handleViewChange = (newView: 'day' | 'week') => {
     setView(newView);
   };
@@ -33,9 +25,9 @@ const CalendarPage = () => {
       </div>
 
       {view === 'day' ?
-        (<Day date={currentDate} events={eventsData} />)
+        (<Day date={currentDate} />)
         :
-        (<Week currentDate={currentDate} events={eventsData} />)
+        (<Week currentDate={currentDate} />)
       }
     </div>
   );
