@@ -6,6 +6,7 @@ import { SocketModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { EventModule } from './event/event.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
       logging: true,
     }),
     UserModule,
+    EventModule
   ],
   controllers: [AppController],
   providers: [AppService],
