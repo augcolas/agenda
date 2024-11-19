@@ -10,5 +10,6 @@ export default tseslint.config(...baseConfigs, {
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "sonarjs/prefer-nullish-coalescing": "off",
     "unicorn/prefer-module": "off",
+    "unicorn/import-style": "off",
   },
 });

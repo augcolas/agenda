@@ -5,6 +5,9 @@
 node_modules/
 dist/
 
+# pnpm-lock file
+pnpm-lock.yaml
+
 # Configurations spécifiques au système
 *.env
 .env.local
@@ -28,4 +31,4 @@ temp/
 
 # Typescript
 *.tsbuildinfo
-pnpm-lock.yaml
+/pnpm-lock.yaml

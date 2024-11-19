@@ -10,12 +10,12 @@ import unicornConfig from './configs/unicorn.js';
 import promiseConfig from './configs/promise.js';
 import tseslint from 'typescript-eslint';
 import unusedImports from './configs/unused-imports.js';
-import jsonConfig from './configs/json.js';
+//import jsonConfig from './configs/json.js';
 import stylisticConfig from './configs/stylistic.js';
 import perfectionistConfig from './configs/perfectionist.js';
 
 export default tseslint.config(
-  ...jsonConfig,
+  //...jsonConfig,
   ...baseConfig,
   ...typescriptConfig,
   ...jsdocConfig,

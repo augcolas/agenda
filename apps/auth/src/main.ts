@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
-// eslint-disable-next-line unicorn/import-style
-import { join } from 'node:path';
+import {NestFactory} from '@nestjs/core';
+import {type MicroserviceOptions, Transport} from '@nestjs/microservices';
+import {join} from 'node:path';
 
-import { AppModule } from './app.module';
+import {AppModule} from './app.module';
+import {RpcExceptionsInterceptor} from './interceptor/rpc.exceptions.interceptor';
 
 /**
  *
@@ -15,12 +15,13 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         package: 'authproto',
-        // eslint-disable-next-line unicorn/prefer-module
         protoPath: join(__dirname, '../node_modules/@agenda/proto/auth.proto'),
         url: '0.0.0.0:3001',
       },
     },
   );
+  app.useGlobalInterceptors(new RpcExceptionsInterceptor());
   await app.listen();
 }
+
 void bootstrap();
