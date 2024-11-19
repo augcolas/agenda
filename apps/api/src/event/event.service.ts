@@ -18,6 +18,10 @@ export class EventService {
     return this.eventRepository.save(eventData);
   }
 
+  async findAll(): Promise<Event[]> {
+    return this.eventRepository.find();
+  }
+
   async findOne(id: number): Promise<Event> {
     const EventData = await this.eventRepository.findOneBy({ id });
     if (!EventData) {

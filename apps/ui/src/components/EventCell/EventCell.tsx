@@ -12,7 +12,7 @@ export const EventCell = ({ event }: EventCellProps) => {
 
   return (
     <div className={"event"} style={{backgroundColor: uniqolor.random().color}}>
-      {event.description}
+      {event.title}
     </div>
   );
 }
