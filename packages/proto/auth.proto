@@ -4,6 +4,7 @@ package authproto;
 
 service AuthService {
   rpc login(loginPayload) returns (token) {}
+  rpc invalidateToken(token) returns (empty) {}
 }
 
 message loginPayload {
@@ -14,4 +15,6 @@ message loginPayload {
 message token {
   string token = 1;
 }
+
+message empty{}
 

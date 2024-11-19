@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, OnModuleInit, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  OnModuleInit,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
@@ -7,6 +14,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 
 interface AuthService {
   login(data: { login: string; password: string }): Observable<string>;
+
+  invalidateToken(data: { token: string }): Observable<void>;
 }
 
 @Controller('auth')
@@ -20,11 +29,18 @@ export class AuthController implements OnModuleInit {
   }
 
   @Public()
-  @Post()
+  @Post('login')
   async login(@Body() loginUser: LoginUserDto) {
     return this.authService.login({
       login: loginUser.email,
       password: loginUser.password,
+    });
+  }
+
+  @Post('logout')
+  async logout(@Req() req: Request) {
+    return this.authService.invalidateToken({
+      token: req['token'],
     });
   }
 }
