@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package notificationproto;
+
+service NotificationService {
+  rpc findAll(empty) returns (notificationList) {}
+  rpc findOne(notificationId) returns (notification) {}
+  rpc add(addNotification) returns (notification) {}
+}
+
+message empty{}
+
+message text {
+  string text = 1;
+}
+
+message notificationList {
+  repeated notification notifications = 1;
+}
+
+message notificationId {
+  string id = 1;
+}
+
+message notification {
+  string text = 1;
+}
+
+message addNotification {
+  string text = 1;
+  int32 delay = 2;
+}

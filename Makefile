@@ -1,3 +1,8 @@
+.PHONY : jobrunner
+jobrunner:
+	@echo "start jobrunner"
+	@pnpm run dev:jobrunner
+
 .PHONY : ui
 ui:
 	@echo "start ui"
@@ -7,6 +12,11 @@ ui:
 api:
 	@echo "start api"
 	@pnpm run dev:api
+
+.PHONY : proto
+proto:
+	@echo "watch proto"
+	@pnpm run watch:proto
 
 .PHONY: up
 up:
@@ -32,3 +42,12 @@ reset:
 	&& docker volume rm $$(docker volume ls -q) \
 	&& docker system prune -a -f
 
+.PHONY: lint
+lint:
+	@echo "linting"
+	@echo "linting api"
+	@pnpm --filter api run lint
+	@echo "linting ui"
+	@pnpm --filter ui run lint
+	@echo "linting jobrunner"
+	@pnpm --filter jobrunner run lint

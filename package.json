@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:ui": "pnpm --filter ui dev",
     "dev:api": "pnpm --filter api start:dev",
+    "dev:jobrunner": "pnpm --filter jobrunner start:dev",
     "dev:auth": "pnpm --filter auth start:dev",
+    "watch:proto": "pnpm --filter proto watch:proto",
     "prepare": "husky"
   },
   "keywords": [],

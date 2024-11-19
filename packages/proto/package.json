@@ -4,9 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch:proto": "chokidar *.proto -c \"pnpm protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_opt=nestJs=true --ts_proto_opt=addGrpcMetadata=true --ts_proto_out=. ./*.proto\""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.2",
+    "ts-protoc-gen": "^0.15.0"
+  },
+  "devDependencies": {
+    "ts-proto": "^2.3.0"
+  }
 }

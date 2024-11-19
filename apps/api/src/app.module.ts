@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { EventModule } from './event/event.module';
+import { NotificationModule } from './notifications/notification.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     }),
     SocketModule,
     AuthModule,
+    NotificationModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -28,7 +30,7 @@ import { UserModule } from './user/user.module';
       logging: true,
     }),
     UserModule,
-    EventModule
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
