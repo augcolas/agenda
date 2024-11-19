@@ -1,8 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { join } from 'node:path';
+import {NestFactory} from '@nestjs/core';
+import {type MicroserviceOptions, Transport} from '@nestjs/microservices';
+import {join} from 'node:path';
 
-import { AppModule } from './app.module';
+import {AppModule} from './app.module';
+import {RpcExceptionsInterceptor} from './interceptor/rpc.exceptions.interceptor';
 
 /**
  *
@@ -19,6 +20,8 @@ async function bootstrap() {
       },
     },
   );
+  app.useGlobalInterceptors(new RpcExceptionsInterceptor());
   await app.listen();
 }
+
 void bootstrap();
