@@ -1,5 +1,5 @@
 /* Week.css */
-.week-table {
+.table {
   display: block;
   width: 100%;
   height: 70vh;
@@ -7,7 +7,7 @@
   overflow-y: auto;
 }
 
-.week-day-header,
+.day-header,
 .hour-header {
   background-color: #f0f0f0;
   text-align: center;

@@ -13,31 +13,39 @@ export class EventService {
       private readonly eventRepository: Repository<Event>,
   ) {}
 
-  async create(createEventDto: CreateEventDto): Promise<Event> {
+  async create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
+    createEventDto.userId = userId; //forcing userId so you can't create an event for another user
     const eventData = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(eventData);
   }
 
-  async findAll(): Promise<Event[]> {
-    return this.eventRepository.find();
+  async findAll(userId: number): Promise<Event[]> {
+    console.log(userId);
+    return this.eventRepository.find({ where: { userId } });
   }
 
-  async findOne(id: number): Promise<Event> {
-    const EventData = await this.eventRepository.findOneBy({ id });
+  async findOne(id: number, userId: number): Promise<Event> {
+    const EventData = await this.eventRepository.findOne({ where: { id, userId } });
     if (!EventData) {
       throw new HttpException('Event Not Found', 404);
     }
     return EventData;
   }
 
-  async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {
-    const ExistingEvent = await this.findOne(id);
+  async update(id: number,userId: number, updateEventDto: UpdateEventDto): Promise<Event> {
+    const ExistingEvent = await this.eventRepository.findOne({ where: { id, userId } });
+    if (!ExistingEvent) {
+      throw new HttpException('Event Not Found', 404);
+    }
     const eventData = this.eventRepository.merge(ExistingEvent, updateEventDto);
     return this.eventRepository.save(eventData);
   }
 
-  async remove(id: number): Promise<Event> {
-      const ExistingEvent = await this.findOne(id);
+  async remove(id: number, userId: number): Promise<Event> {
+      const ExistingEvent = await this.eventRepository.findOne({ where: { id, userId } });
+      if (!ExistingEvent) {
+          throw new HttpException('Event Not Found', 404);
+      }
       return this.eventRepository.remove(ExistingEvent);
   }
 }
