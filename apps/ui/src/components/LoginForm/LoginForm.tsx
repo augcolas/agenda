@@ -1,7 +1,8 @@
-// LoginForm.tsx
 import type React from 'react';
 
 import { useState } from 'react';
+
+import "./LoginForm.css"
 
 interface LoginFormProps {
   readonly onSubmit: (email: string, password: string) => void;
@@ -17,30 +18,32 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '300px' }}>
-      <label>
+    <form onSubmit={handleSubmit} className="login-form">
+      <label htmlFor="email" className="form-label">
         Adresse Email
         <input
           type="email"
+          id="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
-          style={{ padding: '0.5rem', marginTop: '0.25rem', width: '100%' }}
+          className="form-input"
         />
       </label>
 
-      <label>
+      <label htmlFor="password" className="form-label">
         Mot de passe
         <input
           type="password"
+          id="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
-          style={{ padding: '0.5rem', marginTop: '0.25rem', width: '100%' }}
+          className="form-input"
         />
       </label>
 
-      <button type="submit" style={{ padding: '0.75rem', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
+      <button type="submit" className="submit-button">
         Se connecter
       </button>
     </form>
