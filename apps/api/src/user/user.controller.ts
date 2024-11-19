@@ -6,9 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
+import { UserIdGuard } from '../guards/user-id.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user';
@@ -71,6 +73,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(UserIdGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
@@ -87,6 +90,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(UserIdGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
