@@ -43,6 +43,7 @@ export default tseslint.config(
       '@typescript-eslint/no-invalid-this': 'off', // why?
       '@typescript-eslint/quotes': 'off', // why?
       'sonarjs/function-return-type': 'off',
+      '@typescript-eslint/no-misused-promises': 'off'
     },
     ignores: [
       '**/dist/',
