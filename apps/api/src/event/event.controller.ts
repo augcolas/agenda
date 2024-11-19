@@ -13,6 +13,11 @@ export class EventController {
     return this.eventService.create(createEventDto);
   }
 
+  @Get()
+  async findAll() {
+    return this.eventService.findAll();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.eventService.findOne(id);

@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:ui": "pnpm --filter ui dev",
     "dev:api": "pnpm --filter api start:dev",
+    "dev:jobrunner": "pnpm --filter jobrunner start:dev",
     "dev:auth": "pnpm --filter auth start:dev",
+    "watch:proto": "pnpm --filter proto watch:proto",
     "prepare": "husky"
   },
   "keywords": [],
@@ -28,6 +30,7 @@
   },
   "dependencies": {
     "@nestjs/typeorm": "^10.0.2",
+    "jwt-decode": "^4.0.0",
     "pg": "^8.13.1",
     "react-router-dom": "^6.27.0",
     "socket.io": "^4.8.1",

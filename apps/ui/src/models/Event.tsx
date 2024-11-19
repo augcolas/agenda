@@ -1,5 +1,7 @@
 export type Event = {
-  date: Date,
+  id: number,
+  date: string,
   description: string,
-  time: string,
+  title: string,
+  userId: number,
 }

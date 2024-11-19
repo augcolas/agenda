@@ -1,16 +1,32 @@
 // Day.tsx
 
 import './Day.css';
+
+import { useEffect, useState } from 'react';
+
 import { type Event } from '../../models/Event';
+import { EventService } from '../../services/EventService';
 import { EventCell } from '../EventCell/EventCell';
 
 interface DayProps {
   readonly date: Date;
-  readonly events: Event[];
 }
 
-const Day = ({ date, events }: DayProps) => {
+const Day = ({ date }: DayProps) => {
+
   const hours = Array.from({ length: 25 }, (_, index) => index);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    EventService.getEvents()
+      .then((eventArray: Event[]) => {
+        setEvents(eventArray);
+        return eventArray
+      })
+      .catch((error) => {
+        console.error('Failed to fetch events:', error);
+      });
+  },[]);
 
   return (
     <table className="day-table">
@@ -31,8 +47,8 @@ const Day = ({ date, events }: DayProps) => {
             {events
               .filter(
                 (event) =>
-                  event.date.toDateString() === date.toDateString() &&
-                  event.time === `${hour}:00`
+                  new Date(event.date).toDateString() === date.toDateString() &&
+                  new Date(event.date).getHours() === hour
               )
               .map((event, eventIndex) => (
                 <EventCell key={"event_" + hour + "_" + eventIndex} event={event} />

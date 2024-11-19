@@ -24,6 +24,9 @@ export class GrpcErrorInterceptor<T> implements NestInterceptor<T> {
             case 3: {
               throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
             }
+            case 5: {
+              throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            }
             case 7: {
               throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
             }

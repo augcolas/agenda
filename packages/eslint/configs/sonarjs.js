@@ -15,6 +15,7 @@ export default tseslint.config({
     'sonarjs/cognitive-complexity': 1,
     'sonarjs/no-duplicate-string': 'off',
     'sonarjs/no-identical-functions': 'off',
+    'sonarjs/no-misused-promises': 'off',
 
     // Sometime we want to be verbose on types depending others
     'sonarjs/redundant-type-aliases': 'off',
