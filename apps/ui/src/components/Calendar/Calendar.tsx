@@ -7,6 +7,7 @@ import './Calendar.css';
 
 import type { Event } from '../../models/Event';
 
+import { useAuth } from '../../contexts/AuthContext';
 import { EventService } from '../../services/EventService';
 import { EventCell } from '../EventCell/EventCell';
 
@@ -16,10 +17,11 @@ interface WeekProps {
 }
 
 const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
+  const { token } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    EventService.getEvents()
+    EventService.getEvents(token)
       .then((eventArray: Event[]) => {
         setEvents(eventArray);
         return eventArray;
@@ -27,7 +29,7 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
       .catch((error) => {
         console.error('Failed to fetch events:', error);
       });
-  },[]);
+  },[token]);
 
   // Function to get the week days
   const getWeekDays = () => {

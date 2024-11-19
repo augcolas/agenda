@@ -17,7 +17,7 @@ const CalendarPage = () => {
 
   return (
     <div className="calendar">
-      {user && <h1>Welcome, {user.firstName}!</h1>}
+      {user && <h1>Welcome, {user.email}!</h1>}
       <div className="view-selector">
         <button onClick={() => handleViewChange('day')}>Day View</button>
         <button onClick={() => handleViewChange('week')}>Week View</button>
