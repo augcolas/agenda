@@ -2,12 +2,12 @@
 
 import {useState} from 'react';
 
-import './Calendar.css';
+import './CalendarPage.css';
 import Calendar from '../../components/Calendar/Calendar';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CalendarPage = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [view, setView] = useState<'day' | 'week'>('day');
   const [currentDate] = useState(new Date());
 
@@ -18,6 +18,7 @@ const CalendarPage = () => {
   return (
     <div className="calendar">
       {user && <h1>Welcome, {user.email}!</h1>}
+      <button onClick={logout}>logout</button>
       <div className="view-selector">
         <button onClick={() => handleViewChange('day')}>Day View</button>
         <button onClick={() => handleViewChange('week')}>Week View</button>

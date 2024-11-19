@@ -41,6 +41,7 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
 
       // Store the token in localStorage
       localStorage.setItem('authToken', storedToken);
+      setToken(storedToken);
     } catch (error) {
       console.error("Error decoding the token:", error);
       throw new Error("Invalid token format.");

@@ -8,7 +8,7 @@ import './Calendar.css';
 import type { Event } from '../../models/Event';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { EventService } from '../../services/EventService';
+import { EventService } from '../../services/event.service';
 import { EventCell } from '../EventCell/EventCell';
 
 interface WeekProps {
@@ -21,6 +21,8 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
+    if(!token) return;
+    console.log('Fetching events', token);
     EventService.getEvents(token)
       .then((eventArray: Event[]) => {
         setEvents(eventArray);
