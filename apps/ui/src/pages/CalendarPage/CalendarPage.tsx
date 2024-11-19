@@ -3,8 +3,7 @@
 import {useState} from 'react';
 
 import './Calendar.css';
-import Day from "../../components/Day/Day";
-import Week from '../../components/Week/Week';
+import Calendar from '../../components/Calendar/Calendar';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CalendarPage = () => {
@@ -24,11 +23,7 @@ const CalendarPage = () => {
         <button onClick={() => handleViewChange('week')}>Week View</button>
       </div>
 
-      {view === 'day' ?
-        (<Day date={currentDate} />)
-        :
-        (<Week currentDate={currentDate} />)
-      }
+      <Calendar currentDate={currentDate} view={view} />
     </div>
   );
 

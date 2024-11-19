@@ -1,9 +1,9 @@
-// Week.tsx
+
 import type React from 'react';
 
 import { useEffect, useState } from 'react';
 
-import './Week.css';
+import './Calendar.css';
 
 import type { Event } from '../../models/Event';
 
@@ -12,9 +12,10 @@ import { EventCell } from '../EventCell/EventCell';
 
 interface WeekProps {
   readonly currentDate: Date;
+  readonly view: string;
 }
 
-const Week: React.FC<WeekProps> = ({ currentDate }) => {
+const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
@@ -32,16 +33,27 @@ const Week: React.FC<WeekProps> = ({ currentDate }) => {
   const getWeekDays = () => {
     const weekDays: Date[] = [];
     const startOfWeek = new Date(currentDate);
-    const day = currentDate.getDay();
 
-    const adjustment = day === 0 ? -6 : 1 - day; // Adjust for Monday as the start of the week
-    startOfWeek.setDate(currentDate.getDate() + adjustment);
+    switch(view) {
+      case 'day': {
+        weekDays.push(currentDate);
+        break;
+      }
+      case 'week': {
+        const day = currentDate.getDay();
 
-    for (let index = 0; index < 7; index++) {
-      const dayDate = new Date(startOfWeek);
-      dayDate.setDate(startOfWeek.getDate() + index);
-      weekDays.push(dayDate);
+        const adjustment = day === 0 ? -6 : 1 - day; // Adjust for Monday as the start of the week
+        startOfWeek.setDate(currentDate.getDate() + adjustment);
+
+        for (let index = 0; index < 7; index++) {
+          const dayDate = new Date(startOfWeek);
+          dayDate.setDate(startOfWeek.getDate() + index);
+          weekDays.push(dayDate);
+        }
+        break;
+      }
     }
+
     return weekDays;
   };
 
@@ -49,12 +61,12 @@ const Week: React.FC<WeekProps> = ({ currentDate }) => {
   const hours = Array.from({ length: 25 }, (_, index) => index);
 
   return (
-    <table className="week-table">
+    <table className="table">
       <thead>
       <tr>
         <th className="hour-header"></th>
         {weekDays.map((day, index) => (
-          <th key={"week_day_"+index} className="week-day-header">
+          <th key={"day_"+index} className="day-header">
             {day.toLocaleDateString('default', { weekday: 'long' })} <br />
             {day.getDate()}
           </th>
@@ -85,4 +97,4 @@ const Week: React.FC<WeekProps> = ({ currentDate }) => {
   );
 };
 
-export default Week;
+export default Calendar;
