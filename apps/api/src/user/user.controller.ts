@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
+import { Public } from '../decorators/public.decorator';
 import { UserIdGuard } from '../guards/user-id.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,6 +21,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
