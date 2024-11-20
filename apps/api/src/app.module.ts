@@ -31,7 +31,7 @@ import { UserModule } from './user/user.module';
       autoLoadEntities: true, // typeorm loads entities from this directory
       database: process.env.POSTGRES_DATABASE,
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
     UserModule,
     JwtModule.register({

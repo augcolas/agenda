@@ -29,7 +29,7 @@ import { UserAuthService } from './userAuth.service';
       autoLoadEntities: true,
       database: process.env.POSTGRES_DATABASE,
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
     RedisModule.forRoot({
       type: 'single',
