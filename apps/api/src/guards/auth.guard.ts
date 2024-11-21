@@ -1,3 +1,4 @@
+import {BooleanResponse} from '@agenda/proto/auth';
 import {CanActivate, ExecutionContext, forwardRef, Inject, Injectable, UnauthorizedException,} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import {JwtService} from '@nestjs/jwt';
@@ -34,19 +35,31 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('No token found');
     }
 
-    const isBlacklisted = await this.redisService.get(token);
+    let isBlacklisted: string;
+    try {
+      isBlacklisted = await this.redisService.get(token);
+    } catch {
+      throw new UnauthorizedException('Redis server not reachable');
+    }
     if (isBlacklisted) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Revoked token');
     }
 
-    const isTokenUpToDate = await firstValueFrom(
-      this.authService.isJwtTokenUpToDate({ token }),
-    );
+    let isTokenUpToDate: BooleanResponse;
+    try {
+      isTokenUpToDate = await firstValueFrom(
+        this.authService.isJwtTokenUpToDate({ token }),
+      );
+    } catch {
+      throw new UnauthorizedException('Authentication server unreachable');
+    }
     if (!isTokenUpToDate.value) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'Token not matching registered user data',
+      );
     }
 
     try {
@@ -55,7 +68,7 @@ export class AuthGuard implements CanActivate {
       });
       request['token'] = token;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid token');
     }
     return true;
   }
