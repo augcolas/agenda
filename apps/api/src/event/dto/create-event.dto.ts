@@ -2,9 +2,8 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 
 export class CreateEventDto {
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
+  @IsNumber({}, { each: true })
+  userIds: number[];
 
   @IsNotEmpty()
   date: Date;

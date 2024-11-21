@@ -14,38 +14,38 @@ export class EventService {
   ) {}
 
   async create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
-    createEventDto.userId = userId; //forcing userId so you can't create an event for another user
+    createEventDto.userIds = [userId]; //forcing userId so you can't create an event for another user
     const eventData = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(eventData);
   }
 
   async findAll(userId: number): Promise<Event[]> {
-    console.log(userId);
-    return this.eventRepository.find({ where: { userId } });
+    return this.eventRepository
+      .createQueryBuilder('event')
+      .where(':userId = ANY (event.userIds)', { userId })
+      .getMany();
   }
 
-  async findOne(id: number, userId: number): Promise<Event> {
-    const EventData = await this.eventRepository.findOne({ where: { id, userId } });
+  async findOne(userId: number, id: number): Promise<Event> {
+    const EventData = await this.eventRepository
+      .createQueryBuilder('event')
+      .where(':userId = ANY (event.userIds)', { userId })
+      .andWhere('event.id = :id', { id })
+      .getOne();
+
     if (!EventData) {
       throw new HttpException('Event Not Found', 404);
     }
     return EventData;
   }
 
-  async update(id: number,userId: number, updateEventDto: UpdateEventDto): Promise<Event> {
-    const ExistingEvent = await this.eventRepository.findOne({ where: { id, userId } });
-    if (!ExistingEvent) {
-      throw new HttpException('Event Not Found', 404);
-    }
-    const eventData = this.eventRepository.merge(ExistingEvent, updateEventDto);
+  async update(userId: number, id: number, updateEventDto: UpdateEventDto): Promise<Event> {
+
+    const eventData = this.eventRepository.merge(await this.findOne(userId, id), updateEventDto);
     return this.eventRepository.save(eventData);
   }
 
-  async remove(id: number, userId: number): Promise<Event> {
-      const ExistingEvent = await this.eventRepository.findOne({ where: { id, userId } });
-      if (!ExistingEvent) {
-          throw new HttpException('Event Not Found', 404);
-      }
-      return this.eventRepository.remove(ExistingEvent);
+  async remove(userId: number, id: number): Promise<Event> {
+      return this.eventRepository.remove(await this.findOne(userId, id));
   }
 }

@@ -5,8 +5,8 @@ export class Event {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  userId: number;
+  @Column('int', { array: true })
+  userIds: number[];
 
   @Column()
   date: Date;
