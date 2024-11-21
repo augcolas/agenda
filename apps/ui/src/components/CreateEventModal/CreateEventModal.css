@@ -1,0 +1,77 @@
+.create-event-modal {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .create-event-modal h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .create-event-modal label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .create-event-modal input,
+  .create-event-modal textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .create-event-modal input:focus,
+  .create-event-modal textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }
+  
+  .create-event-modal textarea {
+    resize: none;
+    height: 80px;
+  }
+  
+  .create-event-modal button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .create-event-modal button:hover {
+    background-color: #0056b3;
+  }
+  
+  .create-event-modal button:active {
+    transform: scale(0.98);
+  }
+  
+  .create-event-modal button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .create-event-modal input::placeholder,
+  .create-event-modal textarea::placeholder {
+    color: #aaa;
+  }
+  

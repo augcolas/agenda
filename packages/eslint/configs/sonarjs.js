@@ -16,6 +16,8 @@ export default tseslint.config({
     'sonarjs/no-duplicate-string': 'off',
     'sonarjs/no-identical-functions': 'off',
     'sonarjs/no-misused-promises': 'off',
+    'sonarjs/mouse-events-a11y': 'off',
+    'sonarjs/label-has-associated-control': 'off',
 
     // Sometime we want to be verbose on types depending others
     'sonarjs/redundant-type-aliases': 'off',
