@@ -23,6 +23,12 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
 
   const decodeAndSetUser = (storedToken: string) => {
     const decodedToken: { email: string; exp: number; iat: number; role: string; sub: number } = jwtDecode(storedToken);
+    const currentTime = Date.now() / 1000;
+
+    if (decodedToken.exp < currentTime) {
+      logout();
+      throw new Error("Token expired.");
+    }
 
     const usr: UserInterface = {
       id: decodedToken.sub,
@@ -56,7 +62,6 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
     // Clear the token from localStorage
     localStorage.removeItem('authToken');
   };
-
 
   const value: AuthContextType = useMemo(
     () => ({
