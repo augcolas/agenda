@@ -28,6 +28,10 @@ export interface addNotification {
   delay: number;
 }
 
+export interface userId {
+  id: string;
+}
+
 function createBaseempty(): empty {
   return {};
 }

@@ -152,6 +152,30 @@ export const token: MessageFns<token> = {
   },
 };
 
+export interface AuthService {
+  login(request: loginPayload): Promise<token>;
+}
+
+export const AuthServiceServiceName = "authproto.AuthService";
+export class AuthServiceClientImpl implements AuthService {
+  private readonly rpc: Rpc;
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: { service?: string }) {
+    this.service = opts?.service || AuthServiceServiceName;
+    this.rpc = rpc;
+    this.login = this.login.bind(this);
+  }
+  login(request: loginPayload): Promise<token> {
+    const data = loginPayload.encode(request).finish();
+    const promise = this.rpc.request(this.service, "login", data);
+    return promise.then((data) => token.decode(new BinaryReader(data)));
+  }
+}
+
+interface Rpc {
+  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+}
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T

@@ -4,6 +4,7 @@ import {
   notification,
   notificationId,
   notificationList,
+  userId,
 } from '@agenda/proto/notification';
 import {
   Body,
@@ -20,6 +21,7 @@ import { Observable } from 'rxjs';
 interface NotificationService {
   add(data: addNotification): Observable<notification>;
   findAll(arg0: empty): Observable<notificationList>;
+  findByUser(data: userId): Observable<notificationList>;
   findOne(data: notificationId): Observable<notification>;
 }
 
@@ -46,6 +48,11 @@ export class NotificationController implements OnModuleInit {
   findOne(@Param('id') id: notificationId['id']) {
     const job = this.notificationService.findOne({ id });
     return job;
+  }
+
+  @Get('user/:id')
+  findByUser(@Param('id') id: userId['id']) {
+    return this.notificationService.findByUser({ id });
   }
 
   @Post('add')

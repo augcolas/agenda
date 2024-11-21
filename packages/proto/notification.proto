@@ -5,6 +5,7 @@ package notificationproto;
 service NotificationService {
   rpc findAll(empty) returns (notificationList) {}
   rpc findOne(notificationId) returns (notification) {}
+  rpc findByUser(userId) returns (notificationList) {}
   rpc add(addNotification) returns (notification) {}
 }
 
@@ -29,4 +30,8 @@ message notification {
 message addNotification {
   string text = 1;
   int32 delay = 2;
+}
+
+message userId {
+  string id = 1;
 }
