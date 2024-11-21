@@ -8,8 +8,8 @@ import { SocketModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { AuthGuard } from './guards/auth.guard';
 import { EventModule } from './event/event.module';
+import { AuthGuard } from './guards/auth.guard';
 import { NotificationModule } from './notifications/notification.module';
 import { UserModule } from './user/user.module';
 
