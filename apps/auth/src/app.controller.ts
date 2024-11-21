@@ -1,25 +1,27 @@
-import { LoginPayload, Token } from '@agenda/proto/auth';
+import {
+  AuthServiceController,
+  AuthServiceControllerMethods,
+  LoginPayloadRequest,
+  TokenRequest,
+} from '@agenda/proto/auth';
 import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
 
 import { AppService } from './app.service';
 
 @Controller('protoauth')
-export class AppController {
+@AuthServiceControllerMethods()
+export class AppController implements AuthServiceController {
   constructor(private appService: AppService) {}
 
-  @GrpcMethod('AuthService', 'login')
-  async login(loginUser: LoginPayload): Promise<{ token: string }> {
+  async login(loginUser: LoginPayloadRequest): Promise<{ token: string }> {
     return this.appService.login(loginUser);
   }
 
-  @GrpcMethod('AuthService', 'invalidateToken')
-  async invalidateToken(token: Token): Promise<void> {
-    return this.appService.invalidateToken(token.token);
+  async invalidateToken(token: TokenRequest): Promise<{ value: boolean }> {
+    return this.appService.invalidateToken(token);
   }
 
-  @GrpcMethod('AuthService', 'isJwtTokenUpToDate')
-  async isJwtTokenUpToDate(token: Token): Promise<{ value: boolean }> {
-    return this.appService.isJwtTokenUpToDate(token.token);
+  async isJwtTokenUpToDate(token: TokenRequest): Promise<{ value: boolean }> {
+    return this.appService.isJwtTokenUpToDate(token);
   }
 }

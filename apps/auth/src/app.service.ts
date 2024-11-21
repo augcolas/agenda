@@ -1,4 +1,9 @@
-import { LoginPayload } from '@agenda/proto/auth';
+import {
+  BooleanResponse,
+  LoginPayloadRequest,
+  TokenRequest,
+  TokenResponse,
+} from '@agenda/proto/auth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -15,7 +20,7 @@ export class AppService {
     @InjectRedis() private redisService: Redis,
   ) {}
 
-  async login(loginUser: LoginPayload): Promise<{ token: string }> {
+  async login(loginUser: LoginPayloadRequest): Promise<TokenResponse> {
     const userDb = await this.userAuthService.findByName(loginUser.login);
 
     if (!(loginUser.password && userDb?.password)) {
@@ -35,8 +40,8 @@ export class AppService {
     };
   }
 
-  async invalidateToken(token: string) {
-    const decoded = this.jwtService.decode(token);
+  async invalidateToken(token: TokenRequest): Promise<BooleanResponse> {
+    const decoded = this.jwtService.decode(token.token);
     const tokenExpiry = decoded.exp * 1000; // JWT expiry is in seconds, so we convert to milliseconds.
 
     // Calculate the remaining time to live (TTL) for the token.
@@ -44,12 +49,14 @@ export class AppService {
     const ttl = tokenExpiry - currentTime;
 
     if (ttl > 0) {
-      await this.redisService.set(token, 'blacklisted', 'PX', ttl);
+      await this.redisService.set(token.token, 'blacklisted', 'PX', ttl);
+      return { value: true };
     }
+    return { value: true };
   }
 
-  async isJwtTokenUpToDate(token: string): Promise<{ value: boolean }> {
-    const decodedToken = this.jwtService.decode(token);
+  async isJwtTokenUpToDate(token: TokenRequest): Promise<BooleanResponse> {
+    const decodedToken = this.jwtService.decode(token.token);
     const userDb = await this.userAuthService.findById(decodedToken.sub);
 
     return {

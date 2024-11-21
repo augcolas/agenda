@@ -43,7 +43,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const isTokenUpToDate = await firstValueFrom(
-      this.authService.isJwtTokenUpToDate(token),
+      this.authService.isJwtTokenUpToDate({ token }),
     );
     if (!isTokenUpToDate.value) {
       throw new UnauthorizedException();

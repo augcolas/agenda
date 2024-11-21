@@ -1,3 +1,4 @@
+import { TokenResponse } from '@agenda/proto/auth';
 import { Body, Controller, Post, Req } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -11,12 +12,19 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  login(@Body() loginUser: LoginUserDto): Observable<string> {
-    return this.authService.login(loginUser.email, loginUser.password);
+  login(@Body() loginUser: LoginUserDto): Observable<TokenResponse> {
+    return this.authService.login({
+      login: loginUser.email,
+      password: loginUser.password,
+    });
   }
 
   @Post('logout')
-  logout(@Req() req: Request): Observable<void> {
-    return this.authService.invalidateToken(req['token']);
+  logout(@Req() req: Request): void {
+    this.authService
+      .invalidateToken({
+        token: req['token'],
+      })
+      .subscribe();
   }
 }
