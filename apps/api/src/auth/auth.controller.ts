@@ -1,46 +1,22 @@
-import {
-  Body,
-  Controller,
-  Inject,
-  OnModuleInit,
-  Post,
-  Req,
-} from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 import { Public } from '../decorators/public.decorator';
+import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 
-interface AuthService {
-  login(data: { login: string; password: string }): Observable<string>;
-
-  invalidateToken(data: { token: string }): Observable<void>;
-}
-
 @Controller('auth')
-export class AuthController implements OnModuleInit {
-  private authService: AuthService;
-
-  constructor(@Inject('AUTHPROTO_PACKAGE') private client: ClientGrpc) {}
-
-  onModuleInit() {
-    this.authService = this.client.getService<AuthService>('AuthService');
-  }
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('login')
-  async login(@Body() loginUser: LoginUserDto) {
-    return this.authService.login({
-      login: loginUser.email,
-      password: loginUser.password,
-    });
+  login(@Body() loginUser: LoginUserDto): Observable<string> {
+    return this.authService.login(loginUser.email, loginUser.password);
   }
 
   @Post('logout')
-  async logout(@Req() req: Request) {
-    return this.authService.invalidateToken({
-      token: req['token'],
-    });
+  logout(@Req() req: Request): Observable<void> {
+    return this.authService.invalidateToken(req['token']);
   }
 }

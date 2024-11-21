@@ -5,6 +5,7 @@ package authproto;
 service AuthService {
   rpc login(loginPayload) returns (token) {}
   rpc invalidateToken(token) returns (empty) {}
+  rpc isJwtTokenUpToDate(token) returns (booleanValue) {}
 }
 
 message loginPayload {
@@ -14,6 +15,10 @@ message loginPayload {
 
 message token {
   string token = 1;
+}
+
+message booleanValue {
+  bool value = 1;
 }
 
 message empty{}

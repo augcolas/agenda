@@ -1,10 +1,12 @@
-import {CanActivate, ExecutionContext, Injectable, UnauthorizedException,} from '@nestjs/common';
+import {CanActivate, ExecutionContext, forwardRef, Inject, Injectable, UnauthorizedException,} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import {JwtService} from '@nestjs/jwt';
 import {InjectRedis} from '@nestjs-modules/ioredis';
 import {Request} from 'express';
 import {Redis} from 'ioredis';
+import {firstValueFrom} from 'rxjs';
 
+import {AuthService} from '../auth/auth.service';
 import {IS_PUBLIC_KEY} from '../decorators/public.decorator';
 
 /**
@@ -14,6 +16,8 @@ import {IS_PUBLIC_KEY} from '../decorators/public.decorator';
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
     private reflector: Reflector,
     @InjectRedis() private redisService: Redis,
   ) {}
@@ -35,6 +39,13 @@ export class AuthGuard implements CanActivate {
 
     const isBlacklisted = await this.redisService.get(token);
     if (isBlacklisted) {
+      throw new UnauthorizedException();
+    }
+
+    const isTokenUpToDate = await firstValueFrom(
+      this.authService.isJwtTokenUpToDate(token),
+    );
+    if (!isTokenUpToDate.value) {
       throw new UnauthorizedException();
     }
 

@@ -5,19 +5,19 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import * as bcrypt from 'bcrypt';
 import { Redis } from 'ioredis';
 
-import { User } from './user';
+import { UserAuthService } from './userAuth.service';
 
 @Injectable()
 export class AppService {
   constructor(
     private jwtService: JwtService,
+    private userAuthService: UserAuthService,
     @InjectRedis() private redisService: Redis,
   ) {}
 
-  async login(
-    loginUser: LoginPayload,
-    userDb: User,
-  ): Promise<{ token: string }> {
+  async login(loginUser: LoginPayload): Promise<{ token: string }> {
+    const userDb = await this.userAuthService.findByName(loginUser.login);
+
     if (!(loginUser.password && userDb?.password)) {
       throw new UnauthorizedException();
     }
@@ -46,5 +46,17 @@ export class AppService {
     if (ttl > 0) {
       await this.redisService.set(token, 'blacklisted', 'PX', ttl);
     }
+  }
+
+  async isJwtTokenUpToDate(token: string): Promise<{ value: boolean }> {
+    const decodedToken = this.jwtService.decode(token);
+    const userDb = await this.userAuthService.findById(decodedToken.sub);
+
+    return {
+      value:
+        decodedToken.sub === userDb.id &&
+        decodedToken.email === userDb.email &&
+        decodedToken.role === userDb.role,
+    };
   }
 }
