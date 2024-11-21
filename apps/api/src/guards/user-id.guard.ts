@@ -23,8 +23,6 @@ export class UserIdGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      request['user'] = payload;
-
       if (payload.role === Role.ADMIN) {
         return true;
       }
