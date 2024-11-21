@@ -14,7 +14,6 @@ export class EventService {
   ) {}
 
   async create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
-    createEventDto.userIds = [userId]; //forcing userId so you can't create an event for another user
     const eventData = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(eventData);
   }
