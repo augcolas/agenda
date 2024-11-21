@@ -72,16 +72,6 @@ export class AppService {
     }
   }
 
-  // async update(data: notificationId): Promise<notification> {
-  //   try {
-  //     const job = await this.notificationQueue.getJob(data.id);
-  //     await job.update(data);
-  //     return job.data;
-  //   } catch {
-  //     throw new NotFoundException();
-  //   }
-  // }
-
   async remove(data: NotificationIdRequest): Promise<void> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
