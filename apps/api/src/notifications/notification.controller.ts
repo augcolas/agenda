@@ -1,47 +1,38 @@
 import {
   AddNotificationRequest,
-  EmptyRequest,
   NotificationIdRequest,
-  NotificationListResponse,
-  NotificationResponse,
+  NotificationServiceClient,
   UserIdRequest,
 } from '@agenda/proto/notification';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   OnModuleInit,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
 
-interface NotificationService {
-  add(data: AddNotificationRequest): Observable<NotificationResponse>;
-  findAll(arg0: EmptyRequest): Observable<NotificationListResponse>;
-  findByUser(data: UserIdRequest): Observable<NotificationListResponse>;
-  findOne(data: NotificationIdRequest): Observable<NotificationResponse>;
-}
-
-@Controller('notification')
+@Controller('notifications')
 export class NotificationController implements OnModuleInit {
-  private notificationService: NotificationService;
+  private notificationService: NotificationServiceClient;
 
   constructor(
     @Inject('NOTIFICATIONPROTO_PACKAGE') private client: ClientGrpc,
   ) {}
 
   onModuleInit() {
-    this.notificationService = this.client.getService<NotificationService>(
-      'NotificationService',
-    );
+    this.notificationService =
+      this.client.getService<NotificationServiceClient>('NotificationService');
   }
 
-  @Get('findAll')
+  @Get()
   async findAll() {
-    return this.notificationService.findAll('empty');
+    return this.notificationService.findAll({});
   }
 
   @Get(':id')
@@ -55,8 +46,18 @@ export class NotificationController implements OnModuleInit {
     return this.notificationService.findByUser({ id });
   }
 
-  @Post('add')
+  @Post()
   async add(@Body() data: AddNotificationRequest) {
     return this.notificationService.add(data);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: NotificationIdRequest['id']) {
+    return this.notificationService.remove({ id });
+  }
+
+  @Patch(':id')
+  async update(@Param('id') id: NotificationIdRequest['id']) {
+    return this.notificationService.update({ id });
   }
 }

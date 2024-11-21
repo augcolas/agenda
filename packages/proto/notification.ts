@@ -23,16 +23,20 @@ export interface NotificationIdRequest {
 }
 
 export interface NotificationResponse {
-  text: string;
+  notificationId: number;
+  userId: number;
+  eventId: number;
+  delay: number;
 }
 
 export interface AddNotificationRequest {
-  text: string;
+  userId: number;
+  eventId: number;
   delay: number;
 }
 
 export interface UserIdRequest {
-  id: string;
+  id: number;
 }
 
 export const NOTIFICATIONPROTO_PACKAGE_NAME = "notificationproto";
@@ -45,6 +49,10 @@ export interface NotificationServiceClient {
   findByUser(request: UserIdRequest, metadata?: Metadata): Observable<NotificationListResponse>;
 
   add(request: AddNotificationRequest, metadata?: Metadata): Observable<NotificationResponse>;
+
+  update(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
+
+  remove(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
 }
 
 export interface NotificationServiceController {
@@ -67,11 +75,21 @@ export interface NotificationServiceController {
     request: AddNotificationRequest,
     metadata?: Metadata,
   ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
+
+  update(
+    request: NotificationIdRequest,
+    metadata?: Metadata,
+  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
+
+  remove(
+    request: NotificationIdRequest,
+    metadata?: Metadata,
+  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
 }
 
 export function NotificationServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["findAll", "findOne", "findByUser", "add"];
+    const grpcMethods: string[] = ["findAll", "findOne", "findByUser", "add", "update", "remove"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("NotificationService", method)(constructor.prototype[method], method, descriptor);

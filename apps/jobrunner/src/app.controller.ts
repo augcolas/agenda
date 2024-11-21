@@ -14,19 +14,27 @@ import { AppService } from './app.service';
 export class AppController implements NotificationServiceController {
   constructor(private readonly appService: AppService) {}
 
-  async findAll() {
+  findAll() {
     return this.appService.findAll();
   }
 
-  async findOne(data: NotificationIdRequest) {
+  findOne(data: NotificationIdRequest) {
     return this.appService.findOne(data);
   }
 
-  async findByUser(data: UserIdRequest) {
+  findByUser(data: UserIdRequest) {
     return this.appService.findByUser(data.id);
   }
 
-  async add(data: AddNotificationRequest) {
+  add(data: AddNotificationRequest) {
     return this.appService.add(data);
+  }
+
+  remove(data: NotificationIdRequest) {
+    return this.appService.remove(data);
+  }
+
+  update(data: NotificationIdRequest) {
+    return this.appService.update(data);
   }
 }

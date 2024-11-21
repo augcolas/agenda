@@ -3,6 +3,7 @@ import {
   NotificationIdRequest,
   NotificationListResponse,
   NotificationResponse,
+  UserIdRequest,
 } from '@agenda/proto/notification';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -21,6 +22,8 @@ export class AppService {
     try {
       const jobs = await this.notificationQueue.getJobs();
       jobs.forEach((job) => {
+        job.data.delay = job.delay;
+        job.data.notificationId = +job.id;
         notifications.push(job.data);
       });
 
@@ -33,18 +36,24 @@ export class AppService {
   async findOne(data: NotificationIdRequest): Promise<NotificationResponse> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
+      job.data.delay = job.delay;
+      job.data.notificationId = +job.id;
       return job.data;
     } catch {
       throw new NotFoundException();
     }
   }
 
-  async findByUser(userId: string): Promise<NotificationListResponse> {
+  async findByUser(
+    userId: UserIdRequest['id'],
+  ): Promise<NotificationListResponse> {
     const notifications: Array<NotificationResponse> = [];
     try {
       const jobs = await this.notificationQueue.getJobs();
       jobs.forEach((job) => {
         if (job.data.userId === userId) {
+          job.data.delay = job.delay;
+          job.data.notificationId = +job.id;
           notifications.push(job.data);
         }
       });
@@ -60,35 +69,42 @@ export class AppService {
       const newJob = await this.notificationQueue.add(
         'notification',
         {
-          text: data.text,
-          // userId: data.userId,
-          // eventId: data.eventId,
+          userId: data.userId,
+          eventId: data.eventId,
         },
         {
           delay: data.delay,
           removeOnComplete: true,
         },
       );
+      newJob.data.delay = newJob.delay;
+      newJob.data.notificationId = +newJob.id;
       return newJob.data;
     } catch {
       throw new UnauthorizedException();
     }
   }
 
-  // async update(data: notificationId): Promise<notification> {
-  //   try {
-  //     const job = await this.notificationQueue.getJob(data.id);
-  //     await job.update(data);
-  //     return job.data;
-  //   } catch {
-  //     throw new NotFoundException();
-  //   }
-  // }
+  async update(data: NotificationIdRequest): Promise<NotificationResponse> {
+    try {
+      const job = await this.notificationQueue.getJob(data.id);
+      // await this.notificationQueue.updateJobProgress(job.id, {
+      //   delay: job.data.delay,
 
-  async remove(data: NotificationIdRequest): Promise<void> {
+      // });
+      return job.data;
+    } catch {
+      throw new NotFoundException();
+    }
+  }
+
+  async remove(data: NotificationIdRequest): Promise<NotificationResponse> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
       await job.remove();
+      job.data.delay = job.delay;
+      job.data.notificationId = +job.id;
+      return job.data;
     } catch {
       throw new NotFoundException();
     }

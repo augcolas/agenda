@@ -19,3 +19,7 @@ From project root:
 - Back/api : 3000
 - Back/auth : 3001
 - Back/notification : 3004
+
+## pakages/proto
+
+"protoc" need to be installed on your machine to generate the types files from proto files.
