@@ -1,8 +1,8 @@
 import {
-  addNotification,
-  notification,
-  notificationId,
-  notificationList,
+  AddNotificationRequest,
+  NotificationIdRequest,
+  NotificationListResponse,
+  NotificationResponse,
 } from '@agenda/proto/notification';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -16,8 +16,8 @@ import { Queue } from 'bullmq';
 export class AppService {
   constructor(@InjectQueue('notification') private notificationQueue: Queue) {}
 
-  async findAll(): Promise<notificationList> {
-    const notifications: Array<notification> = [];
+  async findAll(): Promise<NotificationListResponse> {
+    const notifications: Array<NotificationResponse> = [];
     try {
       const jobs = await this.notificationQueue.getJobs();
       jobs.forEach((job) => {
@@ -30,7 +30,7 @@ export class AppService {
     }
   }
 
-  async findOne(data: notificationId): Promise<notification> {
+  async findOne(data: NotificationIdRequest): Promise<NotificationResponse> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
       return job.data;
@@ -39,8 +39,8 @@ export class AppService {
     }
   }
 
-  async findByUser(userId: string): Promise<notificationList> {
-    const notifications: Array<notification> = [];
+  async findByUser(userId: string): Promise<NotificationListResponse> {
+    const notifications: Array<NotificationResponse> = [];
     try {
       const jobs = await this.notificationQueue.getJobs();
       jobs.forEach((job) => {
@@ -55,7 +55,7 @@ export class AppService {
     }
   }
 
-  async add(data: addNotification): Promise<notification> {
+  async add(data: AddNotificationRequest): Promise<NotificationResponse> {
     try {
       const newJob = await this.notificationQueue.add(
         'notification',
@@ -85,7 +85,7 @@ export class AppService {
   //   }
   // }
 
-  async remove(data: notificationId): Promise<void> {
+  async remove(data: NotificationIdRequest): Promise<void> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
       await job.remove();

@@ -3,7 +3,7 @@ import { Job } from 'bullmq';
 
 @Processor('notification')
 export class AppProcessor extends WorkerHost {
-  async process(job: Job): Promise<any> {
+  async process(job: Job): Promise<void> {
     try {
       const data = job.data;
       const { text } = data;

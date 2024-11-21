@@ -3,35 +3,31 @@ syntax = "proto3";
 package notificationproto;
 
 service NotificationService {
-  rpc findAll(empty) returns (notificationList) {}
-  rpc findOne(notificationId) returns (notification) {}
-  rpc findByUser(userId) returns (notificationList) {}
-  rpc add(addNotification) returns (notification) {}
+  rpc findAll(EmptyRequest) returns (NotificationListResponse) {}
+  rpc findOne(NotificationIdRequest) returns (NotificationResponse) {}
+  rpc findByUser(UserIdRequest) returns (NotificationListResponse) {}
+  rpc add(AddNotificationRequest) returns (NotificationResponse) {}
 }
 
-message empty{}
+message EmptyRequest{}
 
-message text {
-  string text = 1;
+message NotificationListResponse {
+  repeated NotificationResponse notifications = 1;
 }
 
-message notificationList {
-  repeated notification notifications = 1;
-}
-
-message notificationId {
+message NotificationIdRequest {
   string id = 1;
 }
 
-message notification {
+message NotificationResponse {
   string text = 1;
 }
 
-message addNotification {
+message AddNotificationRequest {
   string text = 1;
   int32 delay = 2;
 }
 
-message userId {
+message UserIdRequest {
   string id = 1;
 }

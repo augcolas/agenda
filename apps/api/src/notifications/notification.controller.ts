@@ -1,10 +1,10 @@
 import {
-  addNotification,
-  empty,
-  notification,
-  notificationId,
-  notificationList,
-  userId,
+  AddNotificationRequest,
+  EmptyRequest,
+  NotificationIdRequest,
+  NotificationListResponse,
+  NotificationResponse,
+  UserIdRequest,
 } from '@agenda/proto/notification';
 import {
   Body,
@@ -19,10 +19,10 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
 interface NotificationService {
-  add(data: addNotification): Observable<notification>;
-  findAll(arg0: empty): Observable<notificationList>;
-  findByUser(data: userId): Observable<notificationList>;
-  findOne(data: notificationId): Observable<notification>;
+  add(data: AddNotificationRequest): Observable<NotificationResponse>;
+  findAll(arg0: EmptyRequest): Observable<NotificationListResponse>;
+  findByUser(data: UserIdRequest): Observable<NotificationListResponse>;
+  findOne(data: NotificationIdRequest): Observable<NotificationResponse>;
 }
 
 @Controller('notification')
@@ -45,18 +45,18 @@ export class NotificationController implements OnModuleInit {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: notificationId['id']) {
+  findOne(@Param('id') id: NotificationIdRequest['id']) {
     const job = this.notificationService.findOne({ id });
     return job;
   }
 
   @Get('user/:id')
-  findByUser(@Param('id') id: userId['id']) {
+  findByUser(@Param('id') id: UserIdRequest['id']) {
     return this.notificationService.findByUser({ id });
   }
 
   @Post('add')
-  async add(@Body() data: addNotification) {
+  async add(@Body() data: AddNotificationRequest) {
     return this.notificationService.add(data);
   }
 }

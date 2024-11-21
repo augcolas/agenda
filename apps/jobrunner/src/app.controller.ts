@@ -1,30 +1,32 @@
-import { addNotification, notificationId } from '@agenda/proto/notification';
-import { InjectQueue } from '@nestjs/bullmq';
+import {
+  AddNotificationRequest,
+  NotificationIdRequest,
+  NotificationServiceController,
+  NotificationServiceControllerMethods,
+  UserIdRequest,
+} from '@agenda/proto/notification';
 import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
-import { Queue } from 'bullmq';
 
 import { AppService } from './app.service';
 
 @Controller()
-export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    @InjectQueue('notification') private notificationQueue: Queue,
-  ) {}
+@NotificationServiceControllerMethods()
+export class AppController implements NotificationServiceController {
+  constructor(private readonly appService: AppService) {}
 
-  @GrpcMethod('NotificationService', 'findAll')
   async findAll() {
     return this.appService.findAll();
   }
 
-  @GrpcMethod('NotificationService', 'findOne')
-  async findOne(data: notificationId) {
+  async findOne(data: NotificationIdRequest) {
     return this.appService.findOne(data);
   }
 
-  @GrpcMethod('NotificationService', 'add')
-  async add(data: addNotification) {
+  async findByUser(data: UserIdRequest) {
+    return this.appService.findByUser(data.id);
+  }
+
+  async add(data: AddNotificationRequest) {
     return this.appService.add(data);
   }
 }
