@@ -28,7 +28,7 @@ import { UserModule } from './user/user.module';
       password: process.env.POSTGRES_PASSWORD,
       username: process.env.POSTGRES_USER,
       autoLoadEntities: true, // typeorm loads entities from this directory
-      database: process.env.POSTGRES_DATABASE,
+      database: process.env.POSTGRES_DB,
       synchronize: true,
       logging: true,
     }),
