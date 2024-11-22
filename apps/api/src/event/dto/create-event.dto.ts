@@ -6,7 +6,7 @@ export class CreateEventDto {
   userIds: number[];
 
   @IsNotEmpty()
-  date: Date;
+  date: string;
 
   @IsNotEmpty()
   @IsString()
@@ -17,7 +17,7 @@ export class CreateEventDto {
 
   constructor(partial: Partial<CreateEventDto>) {
     Object.assign(this, partial);
-    this.date = this.date || new Date();
+    this.date = this.date || new Date().toLocaleString();
     this.title = this.title || 'New Event';
     this.description = this.description || '';
   }

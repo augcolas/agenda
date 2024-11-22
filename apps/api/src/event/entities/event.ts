@@ -9,12 +9,11 @@ export class Event {
   userIds: number[];
 
   @Column()
-  date: Date;
+  date: string;
 
   @Column()
   title: string;
 
   @Column()
   description: string;
-
 }
