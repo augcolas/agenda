@@ -2,6 +2,7 @@ import {
   AddNotificationRequest,
   NotificationIdRequest,
   NotificationServiceClient,
+  UpdateNotificationRequest,
   UserIdRequest,
 } from '@agenda/proto/notification';
 import {
@@ -10,7 +11,6 @@ import {
   Delete,
   Get,
   Inject,
-  OnModuleInit,
   Param,
   Patch,
   Post,
@@ -18,14 +18,12 @@ import {
 import { ClientGrpc } from '@nestjs/microservices';
 
 @Controller('notifications')
-export class NotificationController implements OnModuleInit {
+export class NotificationController {
   private notificationService: NotificationServiceClient;
 
   constructor(
     @Inject('NOTIFICATIONPROTO_PACKAGE') private client: ClientGrpc,
-  ) {}
-
-  onModuleInit() {
+  ) {
     this.notificationService =
       this.client.getService<NotificationServiceClient>('NotificationService');
   }
@@ -57,7 +55,12 @@ export class NotificationController implements OnModuleInit {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: NotificationIdRequest['id']) {
-    return this.notificationService.update({ id });
+  async update(
+    @Param('id') id: UpdateNotificationRequest['id'],
+    @Body() data: UpdateNotificationRequest){
+    return this.notificationService.update({
+      id: id,
+      ...data
+    });
   }
 }

@@ -7,7 +7,7 @@ service NotificationService {
   rpc findOne(NotificationIdRequest) returns (NotificationResponse) {}
   rpc findByUser(UserIdRequest) returns (NotificationListResponse) {}
   rpc add(AddNotificationRequest) returns (NotificationResponse) {}
-  rpc update(NotificationIdRequest) returns (NotificationResponse) {}
+  rpc update(UpdateNotificationRequest) returns (NotificationResponse) {}
   rpc remove(NotificationIdRequest) returns (NotificationResponse) {}
 }
 
@@ -18,11 +18,18 @@ message NotificationListResponse {
 }
 
 message NotificationIdRequest {
-  string id = 1;
+  string id = 1; // default QuedJob Type
 }
 
 message NotificationResponse {
-  int32 notificationId = 1;
+  string id = 1; // default QuedJob Type
+  int32 userId = 2;
+  int32 eventId = 3;
+  int32 delay = 4;
+}
+
+message UpdateNotificationRequest {
+  string id = 1; // default QuedJob Type
   int32 userId = 2;
   int32 eventId = 3;
   int32 delay = 4;
@@ -36,8 +43,4 @@ message AddNotificationRequest {
 
 message UserIdRequest {
   int32 id = 1;
-}
-
-message UserIdRequest {
-  string id = 1;
 }

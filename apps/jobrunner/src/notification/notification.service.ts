@@ -3,6 +3,7 @@ import {
   NotificationIdRequest,
   NotificationListResponse,
   NotificationResponse,
+  UpdateNotificationRequest,
   UserIdRequest,
 } from '@agenda/proto/notification';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -14,7 +15,7 @@ import {
 import { Queue } from 'bullmq';
 
 @Injectable()
-export class AppService {
+export class NotificationService {
   constructor(@InjectQueue('notification') private notificationQueue: Queue) {}
 
   async findAll(): Promise<NotificationListResponse> {
@@ -23,7 +24,7 @@ export class AppService {
       const jobs = await this.notificationQueue.getJobs();
       jobs.forEach((job) => {
         job.data.delay = job.delay;
-        job.data.notificationId = +job.id;
+        job.data.id = job.id;
         notifications.push(job.data);
       });
 
@@ -37,7 +38,7 @@ export class AppService {
     try {
       const job = await this.notificationQueue.getJob(data.id);
       job.data.delay = job.delay;
-      job.data.notificationId = +job.id;
+      job.data.id = job.id;
       return job.data;
     } catch {
       throw new NotFoundException();
@@ -53,7 +54,7 @@ export class AppService {
       jobs.forEach((job) => {
         if (job.data.userId === userId) {
           job.data.delay = job.delay;
-          job.data.notificationId = +job.id;
+          job.data.id = job.id;
           notifications.push(job.data);
         }
       });
@@ -78,21 +79,17 @@ export class AppService {
         },
       );
       newJob.data.delay = newJob.delay;
-      newJob.data.notificationId = +newJob.id;
+      newJob.data.id = newJob.id;
       return newJob.data;
     } catch {
       throw new UnauthorizedException();
     }
   }
 
-  async update(data: NotificationIdRequest): Promise<NotificationResponse> {
+  async update(data: UpdateNotificationRequest): Promise<NotificationResponse> {
     try {
-      const job = await this.notificationQueue.getJob(data.id);
-      // await this.notificationQueue.updateJobProgress(job.id, {
-      //   delay: job.data.delay,
-
-      // });
-      return job.data;
+      await this.remove({id: data.id});
+      return this.add(data);
     } catch {
       throw new NotFoundException();
     }
@@ -103,7 +100,7 @@ export class AppService {
       const job = await this.notificationQueue.getJob(data.id);
       await job.remove();
       job.data.delay = job.delay;
-      job.data.notificationId = +job.id;
+      job.data.id = job.id;
       return job.data;
     } catch {
       throw new NotFoundException();

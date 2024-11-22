@@ -19,11 +19,21 @@ export interface NotificationListResponse {
 }
 
 export interface NotificationIdRequest {
+  /** default QuedJob Type */
   id: string;
 }
 
 export interface NotificationResponse {
-  notificationId: number;
+  /** default QuedJob Type */
+  id: string;
+  userId: number;
+  eventId: number;
+  delay: number;
+}
+
+export interface UpdateNotificationRequest {
+  /** default QuedJob Type */
+  id: string;
   userId: number;
   eventId: number;
   delay: number;
@@ -50,7 +60,7 @@ export interface NotificationServiceClient {
 
   add(request: AddNotificationRequest, metadata?: Metadata): Observable<NotificationResponse>;
 
-  update(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
+  update(request: UpdateNotificationRequest, metadata?: Metadata): Observable<NotificationResponse>;
 
   remove(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
 }
@@ -77,7 +87,7 @@ export interface NotificationServiceController {
   ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
 
   update(
-    request: NotificationIdRequest,
+    request: UpdateNotificationRequest,
     metadata?: Metadata,
   ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
 

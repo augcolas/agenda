@@ -1,9 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-import { AppProcessor } from './app.processor';
-import { AppService } from './app.service';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -13,11 +11,9 @@ import { AppService } from './app.service';
         port: Number.parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
-    BullModule.registerQueue({
-      name: 'notification',
-    }),
+    NotificationModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AppProcessor],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
