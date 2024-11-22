@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { SocketModule } from './alerts/alerts.module';
 import { AppController } from './app.controller';
@@ -30,7 +31,7 @@ import { UserModule } from './user/user.module';
       autoLoadEntities: true, // typeorm loads entities from this directory
       database: process.env.POSTGRES_DB,
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
     UserModule,
     JwtModule.register({
@@ -39,6 +40,10 @@ import { UserModule } from './user/user.module';
       signOptions: { expiresIn: '1d' },
     }),
     EventModule,
+    RedisModule.forRoot({
+      type: 'single',
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    }),
   ],
   controllers: [AppController],
   providers: [

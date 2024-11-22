@@ -20,7 +20,7 @@ export const EventService = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
       body: JSON.stringify(event),
     });
@@ -32,7 +32,7 @@ export const EventService = {
     const response = await fetch(`${API_BASE_URL}/${eventId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
     if (!response.ok) throw new Error(`Error: ${response.status}`);
@@ -44,7 +44,7 @@ export const EventService = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
       body: JSON.stringify(event),
     });
