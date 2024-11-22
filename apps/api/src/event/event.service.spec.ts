@@ -56,8 +56,10 @@ describe('EventService', () => {
 
   afterEach(async () => {
     await repo.clear();
+    await repo.query(`ALTER SEQUENCE event_id_seq RESTART WITH 1`);
   });
 
+  // --- Tests findAll ---
   it('should find all events for the user', async () => {
     const events = await service.findAll(1);
 
@@ -70,5 +72,44 @@ describe('EventService', () => {
     const events = await service.findAll(3); // User 3 has no events
 
     expect(events).toEqual([]);
+  });
+
+  // --- Tests findOne ---
+  it('should find one event for the user', async () => {
+    const userId = 1;
+    const eventId = 1;
+    const events = await service.findOne(userId, eventId);
+    expect(events).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
+  });
+
+  it('should throw an error if event not found', async () => {
+    const userId = 1;
+    const eventId = 2;
+    await expect(service.findOne(userId, eventId)).rejects.toThrow('Event Not Found');
+  });
+
+  // --- Tests create ---
+  it('should create an event', async () => {
+    const event = await service.create(1, {
+      userIds: [1],
+      description: 'Test Event 2',
+      title: 'Test Event 2',
+      date: new Date().toISOString(),
+    });
+
+    expect(event).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event 2', title: 'Test Event 2', date: expect.any(String) });
+  });
+
+  // --- Tests update ---
+  it('should update an event', async () => {
+    const userId = 1;
+    const eventId = 1;
+    const event = await service.update(userId, eventId, {
+      userIds: [1],
+      description: 'Test Event Updated',
+      title: 'Test Event Updated',
+    });
+
+    expect(event).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event Updated', title: 'Test Event Updated', date: expect.any(String) });
   });
 });
