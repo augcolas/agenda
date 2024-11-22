@@ -1,7 +1,4 @@
 import './EventCell.css';
-
-import uniqolor from 'uniqolor';
-
 import { type Event } from '../../models/Event';
 
 export interface EventCellProps {
@@ -11,7 +8,7 @@ export interface EventCellProps {
 export const EventCell = ({ event }: EventCellProps) => {
 
   return (
-    <div className={"event"} style={{backgroundColor: uniqolor.random().color}}>
+    <div className={"event"} style={{backgroundColor: "beige"}}>
       {event.title}
     </div>
   );

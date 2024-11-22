@@ -14,4 +14,8 @@ export class UserAuthService {
   async findByName(email: string): Promise<User> {
     return this.userRepository.findOneBy({ email });
   }
+
+  async findById(id: number): Promise<User> {
+    return this.userRepository.findOneBy({ id });
+  }
 }

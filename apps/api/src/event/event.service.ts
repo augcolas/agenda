@@ -13,31 +13,38 @@ export class EventService {
       private readonly eventRepository: Repository<Event>,
   ) {}
 
-  async create(createEventDto: CreateEventDto): Promise<Event> {
+  async create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
     const eventData = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(eventData);
   }
 
-  async findAll(): Promise<Event[]> {
-    return this.eventRepository.find();
+  async findAll(userId: number): Promise<Event[]> {
+    return this.eventRepository
+      .createQueryBuilder('event')
+      .where(':userId = ANY (event.userIds)', { userId })
+      .getMany();
   }
 
-  async findOne(id: number): Promise<Event> {
-    const EventData = await this.eventRepository.findOneBy({ id });
+  async findOne(userId: number, id: number): Promise<Event> {
+    const EventData = await this.eventRepository
+      .createQueryBuilder('event')
+      .where(':userId = ANY (event.userIds)', { userId })
+      .andWhere('event.id = :id', { id })
+      .getOne();
+
     if (!EventData) {
       throw new HttpException('Event Not Found', 404);
     }
     return EventData;
   }
 
-  async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {
-    const ExistingEvent = await this.findOne(id);
-    const eventData = this.eventRepository.merge(ExistingEvent, updateEventDto);
+  async update(userId: number, id: number, updateEventDto: UpdateEventDto): Promise<Event> {
+
+    const eventData = this.eventRepository.merge(await this.findOne(userId, id), updateEventDto);
     return this.eventRepository.save(eventData);
   }
 
-  async remove(id: number): Promise<Event> {
-      const ExistingEvent = await this.findOne(id);
-      return this.eventRepository.remove(ExistingEvent);
+  async remove(userId: number, id: number): Promise<Event> {
+      return this.eventRepository.remove(await this.findOne(userId, id));
   }
 }

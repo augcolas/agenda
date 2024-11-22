@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (token: string) => void;
   logout: () => void;
+  token: string;
   user: UserInterface | null;
 }
 
@@ -18,9 +19,16 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UserInterface | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [token, setToken] = useState<string>('');
 
-  const decodeAndSetUser = (token: string) => {
-    const decodedToken: { email: string; exp: number; iat: number; role: string; sub: number } = jwtDecode(token);
+  const decodeAndSetUser = (storedToken: string) => {
+    const decodedToken: { email: string; exp: number; iat: number; role: string; sub: number } = jwtDecode(storedToken);
+    const currentTime = Date.now() / 1000;
+
+    if (decodedToken.exp < currentTime) {
+      logout();
+      throw new Error("Token expired.");
+    }
 
     const usr: UserInterface = {
       id: decodedToken.sub,
@@ -32,13 +40,14 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
     setIsAuthenticated(true);
   };
 
-  const login = (token: string) => {
+  const login = (storedToken: string) => {
     try {
       // Decode the token and set user
-      decodeAndSetUser(token);
+      decodeAndSetUser(storedToken);
 
       // Store the token in localStorage
-      localStorage.setItem('authToken', token);
+      localStorage.setItem('authToken', storedToken);
+      setToken(storedToken);
     } catch (error) {
       console.error("Error decoding the token:", error);
       throw new Error("Invalid token format.");
@@ -60,6 +69,7 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
       user,
       login,
       logout,
+      token,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isAuthenticated, user]
@@ -70,12 +80,14 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
     if (storedToken) {
       try {
         decodeAndSetUser(storedToken);
+        setToken(storedToken);
       } catch (error) {
         console.error("Invalid token in localStorage:", error);
         logout();
       }
     }
     setIsInitializing(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isInitializing) {

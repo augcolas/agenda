@@ -37,3 +37,7 @@ message AddNotificationRequest {
 message UserIdRequest {
   int32 id = 1;
 }
+
+message UserIdRequest {
+  string id = 1;
+}

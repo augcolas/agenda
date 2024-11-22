@@ -3,15 +3,24 @@ syntax = "proto3";
 package authproto;
 
 service AuthService {
-  rpc login(loginPayload) returns (token) {}
+  rpc login(LoginPayloadRequest) returns (TokenResponse) {}
+  rpc invalidateToken(TokenRequest) returns (BooleanResponse) {}
+  rpc isJwtTokenUpToDate(TokenRequest) returns (BooleanResponse) {}
 }
 
-message loginPayload {
+message LoginPayloadRequest {
   string login = 1;
   string password = 2;
 }
 
-message token {
+message TokenRequest {
   string token = 1;
 }
 
+message TokenResponse {
+  string token = 1;
+}
+
+message BooleanResponse {
+  bool value = 1;
+}

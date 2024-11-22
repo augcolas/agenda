@@ -1,7 +1,7 @@
 export type Event = {
-  id: number,
-  date: string,
+  date: Date,
   description: string,
   title: string,
-  userId: number,
+  userIds: number[],
+  id?: number,
 }

@@ -6,18 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
+import { Public } from '../decorators/public.decorator';
+import { UserIdGuard } from '../guards/user-id.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user';
+import { Role, User } from './entities/user';
 import { UserService } from './user.service';
 
 @Controller('users') //route group
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
@@ -71,9 +76,17 @@ export class UserController {
     }
   }
 
+  @UseGuards(UserIdGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     try {
+      if (req['user']?.role !== Role.ADMIN) {
+        delete updateUserDto.role;
+      }
       await this.userService.update(+id, updateUserDto);
       return {
         success: true,
@@ -87,6 +100,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(UserIdGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
