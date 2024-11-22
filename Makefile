@@ -3,6 +3,11 @@ jobrunner:
 	@echo "start jobrunner"
 	@pnpm run dev:jobrunner
 
+.PHONY : auth
+auth:
+	@echo "start auth"
+	@pnpm run dev:auth
+
 .PHONY : ui
 ui:
 	@echo "start ui"
@@ -51,3 +56,5 @@ lint:
 	@pnpm --filter ui run lint
 	@echo "linting jobrunner"
 	@pnpm --filter jobrunner run lint
+	@echo "linting auth"
+	@pnpm --filter auth run lint
