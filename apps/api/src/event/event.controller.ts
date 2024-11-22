@@ -9,8 +9,8 @@ export class EventController {
   constructor(private readonly eventService: EventService) {}
 
   @Post()
-  async create(@Req() req: Request, @Body() createEventDto: CreateEventDto) {
-    return this.eventService.create(req['user']?.sub, createEventDto);
+  async create(@Body() createEventDto: CreateEventDto) {
+    return this.eventService.create(createEventDto);
   }
 
   @Get()

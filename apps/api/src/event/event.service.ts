@@ -13,7 +13,7 @@ export class EventService {
       private readonly eventRepository: Repository<Event>,
   ) {}
 
-  async create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
+  async create(createEventDto: CreateEventDto): Promise<Event> {
     const eventData = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(eventData);
   }
@@ -39,7 +39,6 @@ export class EventService {
   }
 
   async update(userId: number, id: number, updateEventDto: UpdateEventDto): Promise<Event> {
-
     const eventData = this.eventRepository.merge(await this.findOne(userId, id), updateEventDto);
     return this.eventRepository.save(eventData);
   }

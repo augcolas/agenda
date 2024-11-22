@@ -90,7 +90,7 @@ describe('EventService', () => {
 
   // --- Tests create ---
   it('should create an event', async () => {
-    const event = await service.create(1, {
+    const event = await service.create({
       userIds: [1],
       description: 'Test Event 2',
       title: 'Test Event 2',
@@ -111,5 +111,14 @@ describe('EventService', () => {
     });
 
     expect(event).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event Updated', title: 'Test Event Updated', date: expect.any(String) });
+  });
+
+  // --- Tests remove ---
+  it('should remove an event', async () => {
+    const userId = 1;
+    const eventId = 1;
+    const event = await service.remove(userId, eventId);
+
+    expect(event).toEqual({ id:undefined, userIds: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
   });
 });
