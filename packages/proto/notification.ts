@@ -14,8 +14,17 @@ export const protobufPackage = "notificationproto";
 export interface EmptyRequest {
 }
 
-export interface NotificationListResponse {
-  notifications: NotificationResponse[];
+export interface AddNotificationListRequest {
+  notifications: AddNotificationRequest[];
+}
+
+export interface UpdateNotificationListRequest {
+  notifications: UpdateNotificationRequest[];
+}
+
+export interface JobIdRequest {
+  /** default QuedJob Type */
+  id: string;
 }
 
 export interface NotificationIdRequest {
@@ -23,83 +32,90 @@ export interface NotificationIdRequest {
   id: string;
 }
 
-export interface NotificationResponse {
-  /** default QuedJob Type */
-  id: string;
-  userId: number;
-  eventId: number;
-  delay: number;
-}
-
 export interface UpdateNotificationRequest {
-  /** default QuedJob Type */
   id: string;
   userId: number;
   eventId: number;
-  delay: number;
+  viewed: boolean;
 }
 
 export interface AddNotificationRequest {
   userId: number;
   eventId: number;
-  delay: number;
 }
 
 export interface UserIdRequest {
-  id: number;
+  userId: number;
+}
+
+export interface RemoveNotificationRequest {
+  userId: number;
+  id: string;
+}
+
+export interface MessageResponse {
+  message: string;
+  status: string;
 }
 
 export const NOTIFICATIONPROTO_PACKAGE_NAME = "notificationproto";
 
 export interface NotificationServiceClient {
-  findAll(request: EmptyRequest, metadata?: Metadata): Observable<NotificationListResponse>;
+  add(request: AddNotificationListRequest, metadata?: Metadata): Observable<MessageResponse>;
 
-  findOne(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
+  update(request: UpdateNotificationListRequest, metadata?: Metadata): Observable<MessageResponse>;
 
-  findByUser(request: UserIdRequest, metadata?: Metadata): Observable<NotificationListResponse>;
+  remove(request: RemoveNotificationRequest, metadata?: Metadata): Observable<MessageResponse>;
 
-  add(request: AddNotificationRequest, metadata?: Metadata): Observable<NotificationResponse>;
+  removeAll(request: UserIdRequest, metadata?: Metadata): Observable<MessageResponse>;
 
-  update(request: UpdateNotificationRequest, metadata?: Metadata): Observable<NotificationResponse>;
+  removeJob(request: JobIdRequest, metadata?: Metadata): Observable<MessageResponse>;
 
-  remove(request: NotificationIdRequest, metadata?: Metadata): Observable<NotificationResponse>;
+  clearJob(request: EmptyRequest, metadata?: Metadata): Observable<MessageResponse>;
+
+  clearUserJob(request: UserIdRequest, metadata?: Metadata): Observable<MessageResponse>;
 }
 
 export interface NotificationServiceController {
-  findAll(
-    request: EmptyRequest,
-    metadata?: Metadata,
-  ): Promise<NotificationListResponse> | Observable<NotificationListResponse> | NotificationListResponse;
-
-  findOne(
-    request: NotificationIdRequest,
-    metadata?: Metadata,
-  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
-
-  findByUser(
-    request: UserIdRequest,
-    metadata?: Metadata,
-  ): Promise<NotificationListResponse> | Observable<NotificationListResponse> | NotificationListResponse;
-
   add(
-    request: AddNotificationRequest,
+    request: AddNotificationListRequest,
     metadata?: Metadata,
-  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
 
   update(
-    request: UpdateNotificationRequest,
+    request: UpdateNotificationListRequest,
     metadata?: Metadata,
-  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
 
   remove(
-    request: NotificationIdRequest,
+    request: RemoveNotificationRequest,
     metadata?: Metadata,
-  ): Promise<NotificationResponse> | Observable<NotificationResponse> | NotificationResponse;
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
+
+  removeAll(
+    request: UserIdRequest,
+    metadata?: Metadata,
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
+
+  removeJob(
+    request: JobIdRequest,
+    metadata?: Metadata,
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
+
+  clearJob(
+    request: EmptyRequest,
+    metadata?: Metadata,
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
+
+  clearUserJob(
+    request: UserIdRequest,
+    metadata?: Metadata,
+  ): Promise<MessageResponse> | Observable<MessageResponse> | MessageResponse;
 }
 
 export function NotificationServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["findAll", "findOne", "findByUser", "add", "update", "remove"];
+    const grpcMethods: string[] = ["add", "update", "remove", "removeAll", "removeJob", "clearJob", "clearUserJob"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("NotificationService", method)(constructor.prototype[method], method, descriptor);

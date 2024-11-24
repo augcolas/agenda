@@ -1,8 +1,10 @@
 import {
+  AddNotificationListRequest,
   AddNotificationRequest,
+  JobIdRequest,
+  MessageResponse,
   NotificationIdRequest,
-  NotificationListResponse,
-  NotificationResponse,
+  UpdateNotificationListRequest,
   UpdateNotificationRequest,
   UserIdRequest,
 } from '@agenda/proto/notification';
@@ -13,97 +15,154 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class NotificationService {
-  constructor(@InjectQueue('notification') private notificationQueue: Queue) {}
+  constructor(
+    @InjectQueue('notification') private notificationQueue: Queue,
+  ) {}
 
-  async findAll(): Promise<NotificationListResponse> {
-    const notifications: Array<NotificationResponse> = [];
+  async add(data: AddNotificationListRequest): Promise<MessageResponse> {
     try {
-      const jobs = await this.notificationQueue.getJobs();
-      jobs.forEach((job) => {
-        job.data.delay = job.delay;
-        job.data.id = job.id;
-        notifications.push(job.data);
-      });
+      await Promise.all(
+        data.notifications.map(async (notification: AddNotificationRequest) => {
+          await this.notificationQueue.add(
+            'notification',
+            {
+              action: 'add',
+              id: uuidv4(),
+              userId: notification.userId,
+              eventId: notification.eventId,
+              viewed: false,
+            },
+            {
+              removeOnComplete: true,
+            },
+          );
+        }),
+      );
 
-      return { notifications };
+      return {
+        message: `Notification(s) added to the Queue`,
+        status: 'success',
+      };
     } catch {
+      throw new UnauthorizedException('Failed to add notifications to the queue');
+    }
+  }
+
+  async update(data: UpdateNotificationListRequest){
+    try{
+      await Promise.all(
+        data.notifications.map(async (notification: UpdateNotificationRequest) => {
+          await this.notificationQueue.add(
+            'notification',
+            {
+              action: 'update',
+              ...notification
+            },
+            {
+              removeOnComplete: true,
+            },
+          );
+        }),
+      );
+
+      return {
+        message: `Notification(s) updates added to the Queue`,
+        status: 'success',
+      };
+    }catch{
       throw new NotFoundException();
     }
   }
 
-  async findOne(data: NotificationIdRequest): Promise<NotificationResponse> {
+  async remove(data: NotificationIdRequest): Promise<MessageResponse> {
     try {
-      const job = await this.notificationQueue.getJob(data.id);
-      job.data.delay = job.delay;
-      job.data.id = job.id;
-      return job.data;
-    } catch {
-      throw new NotFoundException();
-    }
-  }
-
-  async findByUser(
-    userId: UserIdRequest['id'],
-  ): Promise<NotificationListResponse> {
-    const notifications: Array<NotificationResponse> = [];
-    try {
-      const jobs = await this.notificationQueue.getJobs();
-      jobs.forEach((job) => {
-        if (job.data.userId === userId) {
-          job.data.delay = job.delay;
-          job.data.id = job.id;
-          notifications.push(job.data);
-        }
-      });
-
-      return { notifications };
-    } catch {
-      throw new NotFoundException();
-    }
-  }
-
-  async add(data: AddNotificationRequest): Promise<NotificationResponse> {
-    try {
-      const newJob = await this.notificationQueue.add(
+      await this.notificationQueue.add(
         'notification',
         {
-          userId: data.userId,
-          eventId: data.eventId,
+          action: 'remove',
+          ...data
         },
         {
-          delay: data.delay,
           removeOnComplete: true,
         },
       );
-      newJob.data.delay = newJob.delay;
-      newJob.data.id = newJob.id;
-      return newJob.data;
-    } catch {
-      throw new UnauthorizedException();
-    }
-  }
 
-  async update(data: UpdateNotificationRequest): Promise<NotificationResponse> {
-    try {
-      await this.remove({id: data.id});
-      return this.add(data);
+      return {
+        message: `Notification remove added to the Queue`,
+        status: 'success',
+      };
     } catch {
       throw new NotFoundException();
     }
   }
 
-  async remove(data: NotificationIdRequest): Promise<NotificationResponse> {
+  async removeAll(data: UserIdRequest): Promise<MessageResponse> {
+    try {
+      await this.notificationQueue.add(
+        'notification',
+        {
+          action: 'removeAll',
+          ...data
+        },
+        {
+          removeOnComplete: true,
+        },
+      );
+
+      return {
+        message: `Notifications removes added to the Queue for user ${data.userId}`,
+        status: 'success',
+      };
+    } catch {
+      throw new NotFoundException();
+    }
+  }
+
+  async removeJob(data: JobIdRequest): Promise<MessageResponse> {
     try {
       const job = await this.notificationQueue.getJob(data.id);
       await job.remove();
-      job.data.delay = job.delay;
-      job.data.id = job.id;
-      return job.data;
+      return {
+        message: 'Job removed',
+        status: 'success',
+      };
     } catch {
       throw new NotFoundException();
     }
   }
+
+  async clearJob() : Promise<MessageResponse> {
+    console.log('clearJob');
+
+    try{
+      await this.notificationQueue.obliterate();
+
+      return {
+        message: 'All jobs cleaned',
+        status: 'success',
+      };
+    }catch{
+      throw new NotFoundException();
+    }
+  }
+
+  async clearUserJob(data: UserIdRequest) : Promise<MessageResponse>{
+    try{
+      const jobs = await this.notificationQueue.getJobs(['completed', 'failed', 'delayed', 'paused', 'wait', 'active', 'prioritized']);
+      const userJobs = jobs.filter((job) => job.data.userId === data.userId);
+      await Promise.all(userJobs.map((job) => job.remove()));
+
+      return {
+        message: 'All jobs for user cleaned',
+        status: 'success',
+      };
+    }catch{
+      throw new NotFoundException();
+    }
+  }
+
 }

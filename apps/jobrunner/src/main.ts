@@ -10,10 +10,6 @@ import { RpcExceptionsInterceptor } from './interceptor/rpc.exceptions.intercept
 /**
  *
  */
-
-/**
- *
- */
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,

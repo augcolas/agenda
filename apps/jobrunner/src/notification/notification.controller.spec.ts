@@ -16,6 +16,8 @@ describe('NotificationController', () => {
   });
 
   describe('root', () => {
-
+    it('should be defined', () => {
+      expect(notificationController).toBeDefined();
+    });
   });
 });

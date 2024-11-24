@@ -4,6 +4,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'node:path';
 
 import { NotificationController } from './notification.controller';
+import { NotificationService } from './notification.service';
 
 @Module({
   imports: [
@@ -23,5 +24,7 @@ import { NotificationController } from './notification.controller';
     ]),
   ],
   controllers: [NotificationController],
+  providers: [NotificationService],
+
 })
 export class NotificationModule {}

@@ -3,44 +3,55 @@ syntax = "proto3";
 package notificationproto;
 
 service NotificationService {
-  rpc findAll(EmptyRequest) returns (NotificationListResponse) {}
-  rpc findOne(NotificationIdRequest) returns (NotificationResponse) {}
-  rpc findByUser(UserIdRequest) returns (NotificationListResponse) {}
-  rpc add(AddNotificationRequest) returns (NotificationResponse) {}
-  rpc update(UpdateNotificationRequest) returns (NotificationResponse) {}
-  rpc remove(NotificationIdRequest) returns (NotificationResponse) {}
+  rpc add(AddNotificationListRequest) returns (MessageResponse) {}
+  rpc update(UpdateNotificationListRequest) returns (MessageResponse) {}
+  rpc remove(RemoveNotificationRequest) returns (MessageResponse) {}
+  rpc removeAll(UserIdRequest) returns (MessageResponse) {}
+  rpc removeJob(JobIdRequest) returns (MessageResponse) {}
+  rpc clearJob(EmptyRequest) returns (MessageResponse) {}
+  rpc clearUserJob(UserIdRequest) returns (MessageResponse) {}
 }
 
 message EmptyRequest{}
 
-message NotificationListResponse {
-  repeated NotificationResponse notifications = 1;
+message AddNotificationListRequest {
+  repeated AddNotificationRequest notifications = 1;
+}
+
+message UpdateNotificationListRequest {
+  repeated UpdateNotificationRequest notifications = 1;
+}
+
+message JobIdRequest {
+  string id = 1; // default QuedJob Type
 }
 
 message NotificationIdRequest {
   string id = 1; // default QuedJob Type
 }
 
-message NotificationResponse {
-  string id = 1; // default QuedJob Type
-  int32 userId = 2;
-  int32 eventId = 3;
-  int32 delay = 4;
-}
-
 message UpdateNotificationRequest {
-  string id = 1; // default QuedJob Type
+  string id = 1;
   int32 userId = 2;
   int32 eventId = 3;
-  int32 delay = 4;
+  bool viewed = 4;
 }
 
 message AddNotificationRequest {
   int32 userId = 2;
   int32 eventId = 3;
-  int32 delay = 4;
 }
 
 message UserIdRequest {
-  int32 id = 1;
+  int32 userId = 1;
+}
+
+message RemoveNotificationRequest {
+  int32 userId = 1;
+  string id = 2;
+}
+
+message MessageResponse {
+  string message = 1;
+  string status = 2;
 }
