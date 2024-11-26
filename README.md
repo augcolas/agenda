@@ -19,3 +19,11 @@ From project root:
 - Back/api : 3000
 - Back/auth : 3001
 - Back/notification : 3004
+
+## Github workfkows
+
+- [Lint](.github/workflows/lint.yml)
+
+### To test run in local :
+
+Install [act](https://nektosact.com/) and run `act pull_request` in the root of the project.
