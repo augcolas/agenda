@@ -1,6 +1,6 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { Job } from 'bullmq';
+import { Job, Queue } from 'bullmq';
 import { Redis } from 'ioredis';
 
 @Processor('notification')
@@ -8,6 +8,7 @@ export class AppProcessor extends WorkerHost {
 
   constructor(
     @InjectRedis() private redisService: Redis,
+    @InjectQueue('notification') private notificationQueue: Queue,
   ) {
     super();
   }
@@ -41,9 +42,16 @@ export class AppProcessor extends WorkerHost {
         }
       }
 
-    } catch (error) {
-      console.error('Failed to process job:', job.id, error);
-      throw error;
+    } catch (error : unknown) {
+
+      if (error instanceof Error) {
+        this.notificationQueue.emit('error', error);
+        throw error;
+      } else {
+        this.notificationQueue.emit('error', new Error('An error occurred'));
+        throw new Error('An error occurred');
+      }
+
     }
   }
 
@@ -54,15 +62,12 @@ export class AppProcessor extends WorkerHost {
       viewed: false
     });
 
-    // if notification already exists
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     for (const notification of notifications) {
       const notificationParsed = JSON.parse(notification);
       if (notificationParsed.id === data.id || notificationParsed.eventId === data.eventId) {
-        console.log('Notification already exists');
-
         job.discard();
-        return;
+        throw new Error('Notification already exists');
       }
     }
 
@@ -80,7 +85,7 @@ export class AppProcessor extends WorkerHost {
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     if (!notifications) {
       job.discard();
-      return;
+      throw new Error('Notification not found');
     }
 
     notifications.forEach(async (notification, index) => {
@@ -100,20 +105,24 @@ export class AppProcessor extends WorkerHost {
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     if (!notifications) {
       job.discard();
-      return;
+      throw new Error('Notification not found');
     }
 
-    notifications.forEach(async (notification) => {
+    const notificationFound = notifications.filter((notification) => {
       const notificationParsed = JSON.parse(notification);
-      if (notificationParsed.id === id) {
-        const message = {
-          message: `Notification with id ${id} removed from user ${redisKey}`,
-        };
-
-        await this.redisService.lrem(redisKey, 0, notification);
-        await this.redisService.publish('notifications', JSON.stringify(message));
-      }
+      return notificationParsed.id === id;
     });
+
+    if (notificationFound.length === 0) {
+      job.discard();
+      throw new Error('Notification not found');
+    }else{
+      await this.redisService.lrem(redisKey, 0, notificationFound[0]);
+      await this.redisService.publish('notifications', JSON.stringify({
+        message: `Notification with id ${id} removed from user ${redisKey}`,
+      }));
+    }
+
   }
 
   async removeAll(redisKey: string){

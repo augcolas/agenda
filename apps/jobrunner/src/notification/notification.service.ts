@@ -11,35 +11,54 @@ import {
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Queue } from 'bullmq';
+import { Redis } from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectQueue('notification') private notificationQueue: Queue,
-  ) {}
+    @InjectRedis() private redisService: Redis,
+
+  ) {
+    this.notificationQueue.on('error', async(error) => {
+      console.error(error);
+      await this.redisService.publish('notifications', JSON.stringify({
+        error: error.message,
+      }));
+    });
+  }
 
   async add(data: AddNotificationListRequest): Promise<MessageResponse> {
     try {
       await Promise.all(
         data.notifications.map(async (notification: AddNotificationRequest) => {
-          await this.notificationQueue.add(
-            'notification',
-            {
-              action: 'add',
-              id: uuidv4(),
-              userId: notification.userId,
-              eventId: notification.eventId,
-              viewed: false,
-            },
-            {
-              removeOnComplete: true,
-            },
-          );
+          try {
+            await this.notificationQueue.add(
+              'notification',
+              {
+                action: 'add',
+                id: uuidv4(),
+                userId: notification.userId,
+                eventId: notification.eventId,
+                viewed: false,
+              },
+              {
+                attempts: 3,
+                backoff: { type: 'exponential', delay: 5000 },
+                removeOnComplete: true,
+                removeOnFail: true,
+              },
+            );
+          } catch (error) {
+            this.notificationQueue.emit('error', error);
+            throw error;
+          }
+
         }),
       );
 
@@ -47,7 +66,8 @@ export class NotificationService {
         message: `Notification(s) added to the Queue`,
         status: 'success',
       };
-    } catch {
+    } catch (error) {
+      this.notificationQueue.emit('error', error);
       throw new UnauthorizedException('Failed to add notifications to the queue');
     }
   }
@@ -73,8 +93,9 @@ export class NotificationService {
         message: `Notification(s) updates added to the Queue`,
         status: 'success',
       };
-    }catch{
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 
@@ -95,8 +116,9 @@ export class NotificationService {
         message: `Notification remove added to the Queue`,
         status: 'success',
       };
-    } catch {
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 
@@ -117,8 +139,9 @@ export class NotificationService {
         message: `Notifications removes added to the Queue for user ${data.userId}`,
         status: 'success',
       };
-    } catch {
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 
@@ -130,8 +153,9 @@ export class NotificationService {
         message: 'Job removed',
         status: 'success',
       };
-    } catch {
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 
@@ -145,8 +169,9 @@ export class NotificationService {
         message: 'All jobs cleaned',
         status: 'success',
       };
-    }catch{
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 
@@ -160,8 +185,9 @@ export class NotificationService {
         message: 'All jobs for user cleaned',
         status: 'success',
       };
-    }catch{
-      throw new NotFoundException();
+    }catch (error) {
+      this.notificationQueue.emit('error', error);
+      throw error;
     }
   }
 

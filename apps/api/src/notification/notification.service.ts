@@ -7,7 +7,6 @@ export class NotificationService implements OnModuleInit {
   constructor(@InjectRedis() private redisService: Redis) {}
 
   async onModuleInit() {
-    // Subscribe to the 'notifications' channel
     const subscriber = this.redisService.duplicate(); // Create a separate Redis connection for subscriptions
     await subscriber.subscribe('notifications', (err) => {
       if (err) {
@@ -17,10 +16,15 @@ export class NotificationService implements OnModuleInit {
       }
     });
 
-    // Listen for published messages
     subscriber.on('message', (channel, message) => {
       if (channel === 'notifications') {
-        console.log('Received notification:', JSON.parse(message));
+        const parsedMessage = JSON.parse(message)
+
+        if (parsedMessage.error) {
+          console.error(`Error : ${parsedMessage.error}`);
+        } else{
+          console.log('Received notification:', parsedMessage);
+        }
       }
     });
   }
