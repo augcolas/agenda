@@ -34,3 +34,11 @@ From project root:
 ## pakages/proto
 
 "protoc" need to be installed on your machine to generate the types files from proto files.
+
+## Github workfkows
+
+- [Lint](.github/workflows/lint.yml)
+
+### To test run in local :
+
+Install [act](https://nektosact.com/) and run `act pull_request` in the root of the project.
