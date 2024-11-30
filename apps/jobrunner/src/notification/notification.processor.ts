@@ -5,7 +5,6 @@ import { Redis } from 'ioredis';
 
 @Processor('notification')
 export class AppProcessor extends WorkerHost {
-
   constructor(
     @InjectRedis() private redisService: Redis,
     @InjectQueue('notification') private notificationQueue: Queue,
@@ -41,9 +40,7 @@ export class AppProcessor extends WorkerHost {
           return;
         }
       }
-
-    } catch (error : unknown) {
-
+    } catch (error: unknown) {
       if (error instanceof Error) {
         this.notificationQueue.emit('error', error);
         throw error;
@@ -51,39 +48,44 @@ export class AppProcessor extends WorkerHost {
         this.notificationQueue.emit('error', new Error('An error occurred'));
         throw new Error('An error occurred');
       }
-
     }
   }
 
-  async add(job: Job, data: {id: string, eventId: number}, redisKey: string){
+  async add(job: Job, data: { id: string; eventId: number }, redisKey: string) {
     const serializedNotificationAdd = JSON.stringify({
       id: data.id,
       eventId: data.eventId,
-      viewed: false
+      viewed: false,
     });
 
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     for (const notification of notifications) {
       const notificationParsed = JSON.parse(notification);
-      if (notificationParsed.id === data.id || notificationParsed.eventId === data.eventId) {
+      if (
+        notificationParsed.id === data.id ||
+        notificationParsed.eventId === data.eventId
+      ) {
         job.discard();
         throw new Error('Notification already exists');
       }
     }
 
     await this.redisService.rpush(redisKey, serializedNotificationAdd);
-    await this.redisService.publish('notifications' , JSON.stringify(data));
+    await this.redisService.publish('notifications', JSON.stringify(data));
   }
 
-  async update (job: Job, data: {id: string, eventId: number, viewed: boolean}, redisKey: string){
-    const serializedNotificationUpdate = JSON.stringify({
-      id: data.id,
-      eventId: data.eventId,
-      viewed: data.viewed
+  async update(
+    job: Job,
+    data: { id: string; eventId: number; viewed: boolean },
+    redisKey: string,
+  ) {
+    const notifications = await this.redisService.lrange(redisKey, 0, -1);
+    const notificationFound = notifications.filter((notification) => {
+      const notificationParsed = JSON.parse(notification);
+      return notificationParsed.id === data.id;
     });
 
-    const notifications = await this.redisService.lrange(redisKey, 0, -1);
-    if (!notifications) {
+    if (notificationFound.length === 0) {
       job.discard();
       throw new Error('Notification not found');
     }
@@ -93,15 +95,20 @@ export class AppProcessor extends WorkerHost {
 
       if (notificationParsed.id === data.id) {
         notificationParsed.viewed = data.viewed;
-        await this.redisService.lset(redisKey, index, serializedNotificationUpdate);
+        await this.redisService.lset(
+          redisKey,
+          index,
+          JSON.stringify({
+            ...notificationParsed,
+            viewed: data.viewed,
+          }),
+        );
         await this.redisService.publish('notifications', JSON.stringify(data));
       }
     });
-
   }
 
-  async remove(job: Job, id: string, redisKey: string){
-
+  async remove(job: Job, id: string, redisKey: string) {
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     if (!notifications) {
       job.discard();
@@ -116,19 +123,24 @@ export class AppProcessor extends WorkerHost {
     if (notificationFound.length === 0) {
       job.discard();
       throw new Error('Notification not found');
-    }else{
+    } else {
       await this.redisService.lrem(redisKey, 0, notificationFound[0]);
-      await this.redisService.publish('notifications', JSON.stringify({
-        message: `Notification with id ${id} removed from user ${redisKey}`,
-      }));
+      await this.redisService.publish(
+        'notifications',
+        JSON.stringify({
+          message: `Notification with id ${id} removed from user ${redisKey}`,
+        }),
+      );
     }
-
   }
 
-  async removeAll(redisKey: string){
+  async removeAll(redisKey: string) {
     await this.redisService.del(redisKey);
-    await this.redisService.publish('notifications', JSON.stringify({
-      message: `All notifications removed from user ${redisKey}`,
-    }));
+    await this.redisService.publish(
+      'notifications',
+      JSON.stringify({
+        message: `All notifications removed from user ${redisKey}`,
+      }),
+    );
   }
 }

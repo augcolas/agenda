@@ -35,7 +35,6 @@ export interface NotificationIdRequest {
 export interface UpdateNotificationRequest {
   id: string;
   userId: number;
-  eventId: number;
   viewed: boolean;
 }
 
@@ -56,6 +55,18 @@ export interface RemoveNotificationRequest {
 export interface MessageResponse {
   message: string;
   status: string;
+}
+
+export interface GetNotificationResponse {
+  id: string;
+  userId: number;
+  eventId: number;
+  viewed: boolean;
+}
+
+export interface GetNotificationListResponse {
+  userId: number;
+  notifications: GetNotificationResponse[];
 }
 
 export const NOTIFICATIONPROTO_PACKAGE_NAME = "notificationproto";

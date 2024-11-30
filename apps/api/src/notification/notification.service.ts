@@ -1,3 +1,8 @@
+import {
+  GetNotificationListResponse,
+  GetNotificationResponse,
+  UserIdRequest,
+} from '@agenda/proto/notification';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
@@ -18,14 +23,56 @@ export class NotificationService implements OnModuleInit {
 
     subscriber.on('message', (channel, message) => {
       if (channel === 'notifications') {
-        const parsedMessage = JSON.parse(message)
+        const parsedMessage = JSON.parse(message);
 
         if (parsedMessage.error) {
           console.error(`Error : ${parsedMessage.error}`);
-        } else{
+        } else {
           console.log('Received notification:', parsedMessage);
         }
       }
     });
+  }
+
+  async getAll(): Promise<GetNotificationListResponse[]> {
+    const notifications = await this.redisService.keys('user/*/notifications');
+
+    const notificationData: GetNotificationListResponse[] = await Promise.all(
+      notifications.map(async (notification) => {
+        const datas = await this.redisService.lrange(notification, 0, -1);
+        const userId: number = +notification.split('/')[1];
+        const datasParsed: GetNotificationResponse[] = [];
+        datas.forEach((data) => {
+          const notificationParsed: GetNotificationResponse = JSON.parse(data);
+          datasParsed.push(notificationParsed);
+        });
+
+        return {
+          userId,
+          notifications: datasParsed,
+        };
+      }),
+    );
+
+    return notificationData;
+  }
+
+  async getAllUser(
+    userId: UserIdRequest['userId'],
+  ): Promise<GetNotificationListResponse> {
+    const notifications = await this.redisService.lrange(
+      `user/${userId}/notifications`,
+      0,
+      -1,
+    );
+
+    const notificationData: GetNotificationListResponse = {
+      userId,
+      notifications: notifications.map((notification) =>
+        JSON.parse(notification),
+      ),
+    };
+
+    return notificationData;
   }
 }

@@ -9,10 +9,7 @@ import {
   UserIdRequest,
 } from '@agenda/proto/notification';
 import { InjectQueue } from '@nestjs/bullmq';
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
@@ -23,13 +20,15 @@ export class NotificationService {
   constructor(
     @InjectQueue('notification') private notificationQueue: Queue,
     @InjectRedis() private redisService: Redis,
-
   ) {
-    this.notificationQueue.on('error', async(error) => {
+    this.notificationQueue.on('error', async (error) => {
       console.error(error);
-      await this.redisService.publish('notifications', JSON.stringify({
-        error: error.message,
-      }));
+      await this.redisService.publish(
+        'notifications',
+        JSON.stringify({
+          error: error.message,
+        }),
+      );
     });
   }
 
@@ -58,7 +57,6 @@ export class NotificationService {
             this.notificationQueue.emit('error', error);
             throw error;
           }
-
         }),
       );
 
@@ -68,32 +66,36 @@ export class NotificationService {
       };
     } catch (error) {
       this.notificationQueue.emit('error', error);
-      throw new UnauthorizedException('Failed to add notifications to the queue');
+      throw new UnauthorizedException(
+        'Failed to add notifications to the queue',
+      );
     }
   }
 
-  async update(data: UpdateNotificationListRequest){
-    try{
+  async update(data: UpdateNotificationListRequest) {
+    try {
       await Promise.all(
-        data.notifications.map(async (notification: UpdateNotificationRequest) => {
-          await this.notificationQueue.add(
-            'notification',
-            {
-              action: 'update',
-              ...notification
-            },
-            {
-              removeOnComplete: true,
-            },
-          );
-        }),
+        data.notifications.map(
+          async (notification: UpdateNotificationRequest) => {
+            await this.notificationQueue.add(
+              'notification',
+              {
+                action: 'update',
+                ...notification,
+              },
+              {
+                removeOnComplete: true,
+              },
+            );
+          },
+        ),
       );
 
       return {
         message: `Notification(s) updates added to the Queue`,
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
@@ -105,7 +107,7 @@ export class NotificationService {
         'notification',
         {
           action: 'remove',
-          ...data
+          ...data,
         },
         {
           removeOnComplete: true,
@@ -116,7 +118,7 @@ export class NotificationService {
         message: `Notification remove added to the Queue`,
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
@@ -128,7 +130,7 @@ export class NotificationService {
         'notification',
         {
           action: 'removeAll',
-          ...data
+          ...data,
         },
         {
           removeOnComplete: true,
@@ -139,7 +141,7 @@ export class NotificationService {
         message: `Notifications removes added to the Queue for user ${data.userId}`,
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
@@ -153,31 +155,37 @@ export class NotificationService {
         message: 'Job removed',
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
   }
 
-  async clearJob() : Promise<MessageResponse> {
-    console.log('clearJob');
-
-    try{
+  async clearJob(): Promise<MessageResponse> {
+    try {
       await this.notificationQueue.obliterate();
 
       return {
         message: 'All jobs cleaned',
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
   }
 
-  async clearUserJob(data: UserIdRequest) : Promise<MessageResponse>{
-    try{
-      const jobs = await this.notificationQueue.getJobs(['completed', 'failed', 'delayed', 'paused', 'wait', 'active', 'prioritized']);
+  async clearUserJob(data: UserIdRequest): Promise<MessageResponse> {
+    try {
+      const jobs = await this.notificationQueue.getJobs([
+        'completed',
+        'failed',
+        'delayed',
+        'paused',
+        'wait',
+        'active',
+        'prioritized',
+      ]);
       const userJobs = jobs.filter((job) => job.data.userId === data.userId);
       await Promise.all(userJobs.map((job) => job.remove()));
 
@@ -185,10 +193,9 @@ export class NotificationService {
         message: 'All jobs for user cleaned',
         status: 'success',
       };
-    }catch (error) {
+    } catch (error) {
       this.notificationQueue.emit('error', error);
       throw error;
     }
   }
-
 }

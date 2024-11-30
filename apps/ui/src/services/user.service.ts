@@ -30,7 +30,6 @@ export const logUserService = async (
   password: string,
 ): Promise<{ token: string }> => {
   try {
-    console.log("ici");
     const response = await fetch(`http://localhost:3000/auth/login`, {
       method: "POST",
       headers: {
