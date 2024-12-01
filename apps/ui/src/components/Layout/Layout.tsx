@@ -1,0 +1,47 @@
+import { Fragment, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+import "./Layout.css";
+import { useAuth } from "../../contexts/AuthContext";
+
+export type LayoutPropsType = {
+  children: React.ReactNode;
+};
+
+const Layout: React.FC<LayoutPropsType> = ({ children }) => {
+  const [page, setPage] = useState("");
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const path: string = location.pathname.split("/").join(" ");
+    setPage(path);
+  }, [location]);
+
+  return (
+    <div className={`mainLayout ${location.pathname === "/" ? "home" : page}`}>
+      <header>
+        <h1>
+          <Link to="/">Event Manager</Link>
+        </h1>
+        {isAuthenticated ? (
+          <Fragment>
+            <Link to="/calendar">Calendrier</Link>
+            <Link to="/logout">Déconnexion</Link>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <Link to="/login">Connexion</Link>
+            <Link to="/register">Inscription</Link>
+          </Fragment>
+        )}
+      </header>
+      <main>{children}</main>
+      <footer>
+        <p>&copy; 2021 - Event Manager</p>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;

@@ -5,6 +5,21 @@
   height: 70vh;
   border-collapse: collapse;
   overflow-y: auto;
+  overflow-x: hidden;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 .day-header,
@@ -20,7 +35,7 @@
   width: 30px;
   height: 30px;
   padding: 10px;
-  border:none;
+  border: none;
 }
 
 .hour {
@@ -33,7 +48,7 @@
   height: 100%;
 }
 
-.hour-cell:hover{
+.hour-cell:hover {
   background-color: #ccc;
   cursor: pointer;
 }
@@ -94,10 +109,9 @@
   color: #000;
 }
 
-
 tbody {
   display: block;
-  height: calc(70vh - 40px);
+  height: calc(70vh - 52px);
   overflow-y: auto;
 }
 

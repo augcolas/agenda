@@ -1,0 +1,37 @@
+.mainLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+footer {
+  margin-top: auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 50px;
+
+  h1 {
+    margin-right: auto;
+  }
+
+  a {
+    color: #000;
+    font-size: 1.2rem;
+  }
+}
+
+main {
+  padding: 0 20px;
+}
