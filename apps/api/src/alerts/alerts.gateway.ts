@@ -62,4 +62,9 @@ export class SocketEvents {
 
     console.log(`Alert sent`);
   }
+
+  // envoyer une notification à un utilisateur spécifique
+  sendNotification(userId: number, message: string) {
+    this.server.to(`user-${userId}`).emit('notification', message);
+  }
 }

@@ -6,10 +6,14 @@ import {
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { SocketEvents } from 'src/alerts/alerts.gateway';
 
 @Injectable()
 export class NotificationService implements OnModuleInit {
-  constructor(@InjectRedis() private redisService: Redis) {}
+  constructor(
+    @InjectRedis() private redisService: Redis,
+    private readonly socketEventsService: SocketEvents,
+  ) {}
 
   async onModuleInit() {
     const subscriber = this.redisService.duplicate(); // Create a separate Redis connection for subscriptions
@@ -26,9 +30,16 @@ export class NotificationService implements OnModuleInit {
         const parsedMessage = JSON.parse(message);
 
         if (parsedMessage.error) {
-          console.error(`Error : ${parsedMessage.error}`);
+          const parsedError = JSON.parse(parsedMessage.error);
+          this.socketEventsService.sendNotification(
+            parsedError.userId,
+            parsedError,
+          );
         } else {
-          console.log('Received notification:', parsedMessage);
+          this.socketEventsService.sendNotification(
+            parsedMessage.userId,
+            parsedMessage,
+          );
         }
       }
     });

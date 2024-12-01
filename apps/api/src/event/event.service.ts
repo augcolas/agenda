@@ -9,8 +9,8 @@ import { Event } from './entities/event';
 @Injectable()
 export class EventService {
   constructor(
-      @InjectRepository(Event)
-      private readonly eventRepository: Repository<Event>,
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
@@ -38,12 +38,19 @@ export class EventService {
     return EventData;
   }
 
-  async update(userId: number, id: number, updateEventDto: UpdateEventDto): Promise<Event> {
-    const eventData = this.eventRepository.merge(await this.findOne(userId, id), updateEventDto);
+  async update(
+    userId: number,
+    id: number,
+    updateEventDto: UpdateEventDto,
+  ): Promise<Event> {
+    const eventData = this.eventRepository.merge(
+      await this.findOne(userId, id),
+      updateEventDto,
+    );
     return this.eventRepository.save(eventData);
   }
 
   async remove(userId: number, id: number): Promise<Event> {
-      return this.eventRepository.remove(await this.findOne(userId, id));
+    return this.eventRepository.remove(await this.findOne(userId, id));
   }
 }

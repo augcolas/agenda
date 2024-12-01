@@ -15,24 +15,28 @@ export class AppProcessor extends WorkerHost {
   async process(job: Job): Promise<void> {
     try {
       const data = job.data;
-      const { id, userId, action } = data;
+      const {
+        id,
+        userId,
+        action,
+      }: { id: string; action: string; userId: number } = data;
       const redisKey = `user/${userId}/notifications`;
 
       switch (action) {
         case 'add': {
-          await this.add(job, data, redisKey);
+          await this.add(job, data, redisKey, userId, action);
           break;
         }
         case 'remove': {
-          await this.remove(job, id, redisKey);
+          await this.remove(job, id, redisKey, userId, action);
           break;
         }
         case 'removeAll': {
-          await this.removeAll(redisKey);
+          await this.removeAll(redisKey, userId, action);
           break;
         }
         case 'update': {
-          await this.update(job, data, redisKey);
+          await this.update(job, data, redisKey, userId, action);
           break;
         }
         default: {
@@ -51,12 +55,18 @@ export class AppProcessor extends WorkerHost {
     }
   }
 
-  async add(job: Job, data: { id: string; eventId: number }, redisKey: string) {
-    const serializedNotificationAdd = JSON.stringify({
+  async add(
+    job: Job,
+    data: { id: string; eventId: number },
+    redisKey: string,
+    userId: number,
+    action: string,
+  ) {
+    const serializedNotificationAdd = {
       id: data.id,
       eventId: data.eventId,
       viewed: false,
-    });
+    };
 
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     for (const notification of notifications) {
@@ -66,18 +76,32 @@ export class AppProcessor extends WorkerHost {
         notificationParsed.eventId === data.eventId
       ) {
         job.discard();
-        throw new Error('Notification already exists');
+        throw new Error(
+          JSON.stringify({
+            error: 'Notification already exists',
+            userId,
+            action,
+          }),
+        );
       }
     }
 
-    await this.redisService.rpush(redisKey, serializedNotificationAdd);
-    await this.redisService.publish('notifications', JSON.stringify(data));
+    await this.redisService.rpush(
+      redisKey,
+      JSON.stringify(serializedNotificationAdd),
+    );
+    await this.redisService.publish(
+      'notifications',
+      JSON.stringify({ ...serializedNotificationAdd, userId, action }),
+    );
   }
 
   async update(
     job: Job,
     data: { id: string; eventId: number; viewed: boolean },
     redisKey: string,
+    userId: number,
+    action: string,
   ) {
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     const notificationFound = notifications.filter((notification) => {
@@ -87,7 +111,13 @@ export class AppProcessor extends WorkerHost {
 
     if (notificationFound.length === 0) {
       job.discard();
-      throw new Error('Notification not found');
+      throw new Error(
+        JSON.stringify({
+          error: 'Notifications not found',
+          userId,
+          action,
+        }),
+      );
     }
 
     notifications.forEach(async (notification, index) => {
@@ -103,16 +133,31 @@ export class AppProcessor extends WorkerHost {
             viewed: data.viewed,
           }),
         );
-        await this.redisService.publish('notifications', JSON.stringify(data));
+        await this.redisService.publish(
+          'notifications',
+          JSON.stringify({ ...data, userId, action }),
+        );
       }
     });
   }
 
-  async remove(job: Job, id: string, redisKey: string) {
+  async remove(
+    job: Job,
+    id: string,
+    redisKey: string,
+    userId: number,
+    action: string,
+  ) {
     const notifications = await this.redisService.lrange(redisKey, 0, -1);
     if (!notifications) {
       job.discard();
-      throw new Error('Notification not found');
+      throw new Error(
+        JSON.stringify({
+          error: 'Notifications not found',
+          userId,
+          action,
+        }),
+      );
     }
 
     const notificationFound = notifications.filter((notification) => {
@@ -122,24 +167,34 @@ export class AppProcessor extends WorkerHost {
 
     if (notificationFound.length === 0) {
       job.discard();
-      throw new Error('Notification not found');
+      throw new Error(
+        JSON.stringify({
+          error: 'Notifications not found',
+          userId,
+          action,
+        }),
+      );
     } else {
       await this.redisService.lrem(redisKey, 0, notificationFound[0]);
       await this.redisService.publish(
         'notifications',
         JSON.stringify({
+          action,
+          userId,
           message: `Notification with id ${id} removed from user ${redisKey}`,
         }),
       );
     }
   }
 
-  async removeAll(redisKey: string) {
+  async removeAll(redisKey: string, userId: number, action: string) {
     await this.redisService.del(redisKey);
     await this.redisService.publish(
       'notifications',
       JSON.stringify({
-        message: `All notifications removed from user ${redisKey}`,
+        action,
+        userId,
+        error: `All notifications removed from user ${redisKey}`,
       }),
     );
   }

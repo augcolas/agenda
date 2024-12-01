@@ -36,7 +36,7 @@ export class NotificationController implements NotificationServiceController {
     return this.notificationService.removeJob(data);
   }
 
-  clearJob(){
+  clearJob() {
     return this.notificationService.clearJob();
   }
 

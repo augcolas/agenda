@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 // eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
+import { SocketModule } from 'src/alerts/alerts.module';
 
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
@@ -22,9 +23,9 @@ import { NotificationService } from './notification.service';
         },
       },
     ]),
+    SocketModule,
   ],
   controllers: [NotificationController],
   providers: [NotificationService],
-
 })
 export class NotificationModule {}
