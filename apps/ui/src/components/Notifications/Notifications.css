@@ -1,0 +1,57 @@
+.notifications-container {
+  position: relative;
+}
+
+.notifications {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  margin: 10px;
+  padding: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+
+  &.open {
+    display: flex;
+  }
+
+  p {
+    white-space: nowrap;
+  }
+}
+
+.notification {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  white-space: nowrap;
+
+  &.seen {
+    background-color: #e0e0e0;
+  }
+}
+
+.notifications-container .toggle {
+  position: relative;
+
+  span {
+    position: absolute;
+    top: 0;
+    right: -15px;
+    background-color: #d3cece;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.7rem;
+    width: 1.7rem;
+  }
+}
