@@ -3,12 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 
 import "./Layout.css";
 import { useAuth } from "../../contexts/AuthContext";
+import Notifications from "../Notifications/Notifications";
 
-export type LayoutPropsType = {
+export type LayoutProps = {
   children: React.ReactNode;
 };
 
-const Layout: React.FC<LayoutPropsType> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [page, setPage] = useState("");
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -26,6 +27,7 @@ const Layout: React.FC<LayoutPropsType> = ({ children }) => {
         </h1>
         {isAuthenticated ? (
           <Fragment>
+            <Notifications />
             <Link to="/calendar">Calendrier</Link>
             <Link to="/logout">Déconnexion</Link>
           </Fragment>

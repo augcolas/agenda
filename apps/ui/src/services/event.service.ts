@@ -1,13 +1,12 @@
-const API_BASE_URL = 'http://localhost:3000/events';
+const API_BASE_URL = "http://localhost:3000/events";
 
-import { type Event } from '../models/Event';
+import { type Event } from "../models/Event";
 
 export const EventService = {
-
   async getEvents(token: string): Promise<Event[]> {
     const response = await fetch(API_BASE_URL, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -17,10 +16,10 @@ export const EventService = {
 
   async addEvent(event: Event) {
     const response = await fetch(API_BASE_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
       body: JSON.stringify(event),
     });
@@ -30,9 +29,9 @@ export const EventService = {
 
   async deleteEvent(eventId: number) {
     const response = await fetch(`${API_BASE_URL}/${eventId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
     });
     if (!response.ok) throw new Error(`Error: ${response.status}`);
@@ -41,10 +40,10 @@ export const EventService = {
 
   async updateEvent(event: Event) {
     const response = await fetch(`${API_BASE_URL}/${event.id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
       body: JSON.stringify(event),
     });
