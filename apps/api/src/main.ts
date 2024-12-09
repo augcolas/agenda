@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { type CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { GrpcErrorInterceptor } from './interceptor/grpc-error.interceptor';
@@ -10,6 +11,14 @@ import { GrpcErrorInterceptor } from './interceptor/grpc-error.interceptor';
  */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Agenda API Documentation')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   // Active la validation globale des pipes
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -11,17 +12,21 @@ import { Role } from '../entities/user';
 export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
+  @ApiProperty({ description: 'email' })
   email: string;
 
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({ description: 'password' })
   password: string;
 
   @IsNotEmpty()
   @IsBoolean()
+  @ApiProperty({ description: 'areNotificationsEnabled' })
   areNotificationsEnabled: boolean;
 
   @IsEnum(Role)
+  @ApiProperty({ description: 'role' })
   role: Role = Role.USER;
 
   constructor(partial: Partial<CreateUserDto>) {
