@@ -1,9 +1,11 @@
 import {
   AuthServiceClient,
   BooleanResponse,
+  EmailRequest,
   LoginPayloadRequest,
   TokenRequest,
   TokenResponse,
+  UpdateUserByResetTokenRequest,
 } from '@agenda/proto/auth';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -28,5 +30,15 @@ export class AuthService implements AuthServiceClient {
 
   isJwtTokenUpToDate(request: TokenRequest): Observable<BooleanResponse> {
     return this.microserviceAuthService.isJwtTokenUpToDate(request);
+  }
+
+  forgotPassword(request: EmailRequest): Observable<BooleanResponse> {
+    return this.microserviceAuthService.forgotPassword(request);
+  }
+
+  updateUserByResetToken(
+    request: UpdateUserByResetTokenRequest,
+  ): Observable<BooleanResponse> {
+    return this.microserviceAuthService.updateUserByResetToken(request);
   }
 }

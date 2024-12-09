@@ -28,6 +28,15 @@ export interface BooleanResponse {
   value: boolean;
 }
 
+export interface EmailRequest {
+  email: string;
+}
+
+export interface UpdateUserByResetTokenRequest {
+  token: string;
+  password: string;
+}
+
 export const AUTHPROTO_PACKAGE_NAME = "authproto";
 
 export interface AuthServiceClient {
@@ -36,6 +45,10 @@ export interface AuthServiceClient {
   invalidateToken(request: TokenRequest, metadata?: Metadata): Observable<BooleanResponse>;
 
   isJwtTokenUpToDate(request: TokenRequest, metadata?: Metadata): Observable<BooleanResponse>;
+
+  forgotPassword(request: EmailRequest, metadata?: Metadata): Observable<BooleanResponse>;
+
+  updateUserByResetToken(request: UpdateUserByResetTokenRequest, metadata?: Metadata): Observable<BooleanResponse>;
 }
 
 export interface AuthServiceController {
@@ -53,11 +66,27 @@ export interface AuthServiceController {
     request: TokenRequest,
     metadata?: Metadata,
   ): Promise<BooleanResponse> | Observable<BooleanResponse> | BooleanResponse;
+
+  forgotPassword(
+    request: EmailRequest,
+    metadata?: Metadata,
+  ): Promise<BooleanResponse> | Observable<BooleanResponse> | BooleanResponse;
+
+  updateUserByResetToken(
+    request: UpdateUserByResetTokenRequest,
+    metadata?: Metadata,
+  ): Promise<BooleanResponse> | Observable<BooleanResponse> | BooleanResponse;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["login", "invalidateToken", "isJwtTokenUpToDate"];
+    const grpcMethods: string[] = [
+      "login",
+      "invalidateToken",
+      "isJwtTokenUpToDate",
+      "forgotPassword",
+      "updateUserByResetToken",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
