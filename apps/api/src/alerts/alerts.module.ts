@@ -4,5 +4,6 @@ import { SocketEvents } from './alerts.gateway';
 
 @Module({
   providers: [SocketEvents],
+  exports: [SocketEvents],
 })
 export class SocketModule {}
