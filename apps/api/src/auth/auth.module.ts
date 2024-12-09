@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
         name: 'AUTHPROTO_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          url: '0.0.0.0:3001',
+          url: `${process.env.AUTH_MICROSERVICE_HOST}:${process.env.AUTH_MICROSERVICE_PORT}`,
           package: 'authproto',
           protoPath: join(
             __dirname,

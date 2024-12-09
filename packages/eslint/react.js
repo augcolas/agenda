@@ -1,32 +1,34 @@
 // @ts-check
 
-import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import baseConfigs from './base.js';
-import { fixupPluginRules } from '@eslint/compat';
+import tseslint from "typescript-eslint";
+import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import baseConfigs from "./base.js";
+import { fixupPluginRules } from "@eslint/compat";
 
 export default tseslint.config(
   ...baseConfigs,
+  // @ts-ignore
   reactPlugin.configs.flat.recommended,
-  reactPlugin.configs.flat['jsx-runtime'],
+  // @ts-ignore
+  reactPlugin.configs.flat["jsx-runtime"],
   {
     plugins: {
       // @ts-ignore
-      'react-hooks': fixupPluginRules(reactHooksPlugin),
+      "react-hooks": fixupPluginRules(reactHooksPlugin),
     },
-    ignores: ['**/.expo/**', '**/build/**'],
+    ignores: ["**/.expo/**", "**/build/**"],
     rules: {
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      'react/prefer-read-only-props': 'warn',
-      'react/display-name': 'off',
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/prefer-read-only-props": "warn",
+      "react/display-name": "off",
 
       // useless with TS
-      'react/prop-types': 'off',
+      "react/prop-types": "off",
 
-      'unicorn/prevent-abbreviations': [
-        'error',
+      "unicorn/prevent-abbreviations": [
+        "error",
         {
           allowList: {
             args: true,
@@ -46,88 +48,88 @@ export default tseslint.config(
           },
         },
       ],
-      '@typescript-eslint/naming-convention': [
-        'warn',
+      "@typescript-eslint/naming-convention": [
+        "warn",
         {
-          selector: 'default',
-          format: ['camelCase'],
+          selector: "default",
+          format: ["camelCase"],
         },
         {
-          selector: 'variable',
-          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+          selector: "variable",
+          format: ["camelCase", "UPPER_CASE", "PascalCase"],
         },
         {
-          selector: 'variable',
+          selector: "variable",
           format: null,
           filter: {
-            regex: '^_$',
+            regex: "^_$",
             match: true,
           },
         },
         {
-          selector: 'function',
-          format: ['PascalCase', 'camelCase'],
+          selector: "function",
+          format: ["PascalCase", "camelCase"],
         },
         {
-          selector: 'parameter',
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
+          selector: "parameter",
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'memberLike',
+          selector: "memberLike",
           format: null,
           filter: {
-            regex: '[- ]',
+            regex: "[- ]",
             match: true,
           },
         },
         {
-          selector: 'objectLiteralProperty',
+          selector: "objectLiteralProperty",
           format: null,
           filter: {
-            regex: '(^\\d|[-/ ])',
+            regex: "(^\\d|[-/ ])",
             match: true,
           },
         },
         {
-          selector: 'enumMember',
-          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
-          leadingUnderscore: 'allow',
+          selector: "enumMember",
+          format: ["camelCase", "UPPER_CASE", "PascalCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'property',
-          format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
-          leadingUnderscore: 'allow',
+          selector: "property",
+          format: ["camelCase", "UPPER_CASE", "PascalCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'method',
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
+          selector: "method",
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'memberLike',
-          modifiers: ['static'],
-          format: ['camelCase', 'UPPER_CASE'],
+          selector: "memberLike",
+          modifiers: ["static"],
+          format: ["camelCase", "UPPER_CASE"],
         },
         {
-          selector: 'memberLike',
-          modifiers: ['private'],
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
+          selector: "memberLike",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'memberLike',
-          modifiers: ['protected'],
-          format: ['camelCase'],
-          leadingUnderscore: 'allow',
+          selector: "memberLike",
+          modifiers: ["protected"],
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
         },
         {
-          selector: 'typeLike',
-          format: ['PascalCase'],
+          selector: "typeLike",
+          format: ["PascalCase"],
         },
         {
-          selector: 'import',
-          format: ['PascalCase', 'camelCase'],
+          selector: "import",
+          format: ["PascalCase", "camelCase"],
         },
       ],
     },

@@ -14,3 +14,17 @@ RUN pnpm run build
 EXPOSE 3000
 CMD ["pnpm", "start"]
 
+FROM base AS auth
+WORKDIR /agenda/apps/auth
+RUN pnpm run build
+
+EXPOSE 3001
+CMD ["pnpm", "start"]
+
+FROM base AS ui
+WORKDIR /agenda/apps/ui
+RUN pnpm run build
+
+EXPOSE 5173
+CMD ["pnpm", "dev"]
+

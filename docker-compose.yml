@@ -7,6 +7,29 @@ services:
       target: api
     ports:
       - "3000:3000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - AUTH_MICROSERVICE_HOST=agenda_auth
+      - AUTH_MICROSERVICE_PORT=3001
+    depends_on:
+      - postgres
+
+  agenda_auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: auth
+    ports:
+      - "3001:3001"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - AUTH_MICROSERVICE_HOST=agenda_auth
+      - AUTH_MICROSERVICE_PORT=3001
+
+    depends_on:
+      - postgres
 
   agenda_ui:
     build:
@@ -25,15 +48,6 @@ services:
     ports:
       - ${POSTGRES_PORT}:5432
 
-  adminer:
-    image: adminer
-    container_name: adminer
-    environment:
-      ADMINER_DESIGN: pepa-linha
-      ADMINER_DEFAULT_SERVER: database
-    ports:
-      - "8082:8080"
-
   maildev:
     image: maildev/maildev
     command: bin/maildev --web 80 --smtp 25 --hide-extensions STARTTLS
@@ -45,10 +59,3 @@ services:
     image: redis
     ports:
       - "6379:6379"
-
-  redis_insight:
-    image: redis/redisinsight:latest
-    ports:
-      - "5540:5540"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
