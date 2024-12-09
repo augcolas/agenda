@@ -27,14 +27,16 @@ export const NotificationService = {
     notificationId: string,
     userId: number,
   ): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/id/${notificationId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/${userId}/${notificationId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-      body: JSON.stringify({ userId }),
-    });
+    );
     if (!response.ok) throw new Error(`Error: ${response.status}`);
   },
 
