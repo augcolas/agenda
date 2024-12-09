@@ -5,7 +5,6 @@ import {
   JobIdRequest,
   NotificationIdRequest,
   NotificationServiceClient,
-  RemoveNotificationRequest,
   UpdateNotificationListRequest,
   UserIdRequest,
 } from '@agenda/proto/notification';
@@ -55,13 +54,12 @@ export class NotificationController {
     return this.microserviceNotificationService.update(data);
   }
 
-  @Delete('/id/:id')
+  @Delete('/:userId/:id')
   async remove(
     @Param('id') id: NotificationIdRequest['id'],
-    @Body() data: RemoveNotificationRequest,
+    @Param('userId') userId: UserIdRequest['userId'],
   ) {
-    data.id = id;
-    return this.microserviceNotificationService.remove(data);
+    return this.microserviceNotificationService.remove({ id, userId });
   }
 
   @Delete('/user/:id')

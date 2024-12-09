@@ -35,21 +35,23 @@ export class NotificationService implements OnModuleInit {
   }
 
   async getAll(): Promise<GetNotificationListResponse[]> {
-    const notifications = await this.redisService.keys('user/*/notifications');
+    const redisNotifications = await this.redisService.keys(
+      'user/*/notifications',
+    );
 
     const notificationData: GetNotificationListResponse[] = await Promise.all(
-      notifications.map(async (notification) => {
+      redisNotifications.map(async (notification) => {
         const datas = await this.redisService.lrange(notification, 0, -1);
         const userId: number = +notification.split('/')[1];
-        const datasParsed: GetNotificationResponse[] = [];
+        const notifications: GetNotificationResponse[] = [];
         datas.forEach((data) => {
           const notificationParsed: GetNotificationResponse = JSON.parse(data);
-          datasParsed.push(notificationParsed);
+          notifications.push(notificationParsed);
         });
 
         return {
           userId,
-          notifications: datasParsed,
+          notifications,
         };
       }),
     );
