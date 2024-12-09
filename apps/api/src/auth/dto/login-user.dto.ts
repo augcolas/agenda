@@ -9,3 +9,15 @@ export class LoginUserDto {
   @IsString()
   password: string;
 }
+
+export class EmailDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class PasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+}

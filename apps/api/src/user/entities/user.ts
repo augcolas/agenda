@@ -18,6 +18,9 @@ export class User {
 
   @Column()
   role: Role;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string;
 }
 
 export enum Role {

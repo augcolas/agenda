@@ -6,6 +6,8 @@ service AuthService {
   rpc login(LoginPayloadRequest) returns (TokenResponse) {}
   rpc invalidateToken(TokenRequest) returns (BooleanResponse) {}
   rpc isJwtTokenUpToDate(TokenRequest) returns (BooleanResponse) {}
+  rpc forgotPassword(EmailRequest) returns (BooleanResponse) {}
+  rpc updateUserByResetToken(UpdateUserByResetTokenRequest) returns (BooleanResponse) {}
 }
 
 message LoginPayloadRequest {
@@ -23,4 +25,13 @@ message TokenResponse {
 
 message BooleanResponse {
   bool value = 1;
+}
+
+message EmailRequest {
+  string email = 1;
+}
+
+message UpdateUserByResetTokenRequest {
+  string token = 1;
+  string password = 2;
 }

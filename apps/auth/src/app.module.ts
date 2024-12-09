@@ -6,6 +6,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { EmailModule } from './email/email.module';
 import { User } from './user';
 import { UserAuthService } from './userAuth.service';
 
@@ -35,6 +36,7 @@ import { UserAuthService } from './userAuth.service';
       type: 'single',
       url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     }),
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserAuthService],
