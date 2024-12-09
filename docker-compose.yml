@@ -1,13 +1,20 @@
 services:
+
   agenda_api:
-    build: ./apps/api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    ports:
+      - "3000:3000"
 
   agenda_ui:
-    build: ./apps/ui
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ui
     ports:
-      - "8080:80"
-    depends_on:
-      - agenda_api
+      - "5173:5173"
 
   postgres:
     image: postgres
@@ -25,7 +32,7 @@ services:
       ADMINER_DESIGN: pepa-linha
       ADMINER_DEFAULT_SERVER: database
     ports:
-      - 8082:8080
+      - "8082:8080"
 
   maildev:
     image: maildev/maildev
@@ -37,17 +44,11 @@ services:
   redis:
     image: redis
     ports:
-      - 6379:6379
+      - "6379:6379"
 
   redis_insight:
     image: redis/redisinsight:latest
     ports:
-      - 5540:5540
+      - "5540:5540"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    volumes:
-      - redis_insight_volume:/data
-
-volumes:
-  redis_insight_volume:
-
