@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
     try {
       const jwt = await logUserService(email, pwd);
       login(jwt.token);
-      navigate('/calendar'); // Redirect to calendar page
+      navigate('/'); // Redirect to calendar page
     } catch (error_: unknown) {
       // Handle different error cases
       if (error_ instanceof Error) {

@@ -5,15 +5,22 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { logoutUserService } from '../../services/user.service';
+
 
 const LogoutPage: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     logout(); // Déconnecte l'utilisateur
+
+    logoutUserService(token).catch((error) => {
+      console.error('Error logging out the user:', error);
+    });
+
     navigate('/'); // Redirige vers la page de connexion
-  }, [logout, navigate]);
+  }, [logout, navigate, token]);
 
   return (
     <div>
