@@ -15,6 +15,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Agenda API Documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
