@@ -40,7 +40,7 @@ export const EventService = {
 
   async updateEvent(event: Event) {
     const response = await fetch(`${API_BASE_URL}/${event.id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("authToken")}`,

@@ -51,3 +51,25 @@ export const logUserService = async (
     throw error;
   }
 };
+
+
+export const logoutUserService = async (token: string): Promise<void> => {
+  try {
+    const response = await fetch(`http://localhost:3000/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP Error: ${response.status} - ${response.statusText}`,
+      );
+    }
+  } catch (error) {
+    console.error("Error logging out the user:", error);
+    throw error;
+  }
+}

@@ -28,7 +28,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isAuthenticated ? (
           <Fragment>
             <Notifications />
-            <Link to="/calendar">Calendrier</Link>
             <Link to="/logout">Déconnexion</Link>
           </Fragment>
         ) : (

@@ -7,7 +7,6 @@ import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import CalendarPage from "./pages/CalendarPage/CalendarPage";
-import Home from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import LogoutPage from "./pages/LogoutPage/LogoutPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
@@ -15,9 +14,8 @@ import "./main.css";
 
 const Main: React.FC = () => (
   <Routes>
-    <Route path="/" element={<Home />} />
     <Route
-      path="/calendar"
+      path="/"
       element={
         <ProtectedRoute>
           <CalendarPage />

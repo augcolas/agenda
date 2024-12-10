@@ -1,20 +1,34 @@
 import { useState } from "react";
 
 import { type Event } from "../../models/Event";
+import "./EventModal.css";
 
-interface CreateEventModalProps {
-  closeModal: () => void; // Fonction pour fermer la modale
+interface EventModalProps {
   eventDate: Date;
-  setEvent: (event: Event) => void; // Fonction pour retourner l'événement créé
-  userId: number; // ID de l'utilisateur actuel
+  eventToUpdate: Event | null;
+  handleAddEvent: (event: Event) => void;
+  handleCloseModal: () => void;
+  handleRDeleteEvent: (eventId: number) => void;
+  handleUpdateEvent: (event: Event) => void;
+  userId: number;
 }
 
-const CreateEventModal: React.FC<CreateEventModalProps> = ({ userId, eventDate, setEvent, closeModal }) => {
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [additionalUserId, setAdditionalUserId] = useState<string>(""); // ID utilisateur à ajouter
-  const [userIds, setUserIds] = useState<number[]>([userId]); // Initialiser avec l'utilisateur actuel
-  const [error, setError] = useState<string | null>(null); // Gestion des erreurs
+const EventModal: React.FC<EventModalProps> = ({
+  userId,
+  eventDate,
+  handleAddEvent,
+  handleUpdateEvent,
+  handleRDeleteEvent,
+  handleCloseModal,
+  eventToUpdate
+}) => {
+  const [title, setTitle] = useState<string>(eventToUpdate ? eventToUpdate.title : "");
+  const [description, setDescription] = useState<string>(eventToUpdate ? eventToUpdate.description : "");
+  const [additionalUserId, setAdditionalUserId] = useState<string>("");
+  const [userIds, setUserIds] = useState<number[]>(
+    eventToUpdate ? eventToUpdate.userIds : [userId]
+  );
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddUser = () => {
     const id = Number.parseInt(additionalUserId, 10);
@@ -26,12 +40,18 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ userId, eventDate, 
       setError("L'utilisateur est déjà ajouté.");
       return;
     }
-    setUserIds([...userIds, id]); // Ajouter l'ID à la liste des utilisateurs
-    setAdditionalUserId(""); // Réinitialiser le champ
-    setError(null); // Réinitialiser les erreurs
+    setUserIds([...userIds, id]);
+    setAdditionalUserId("");
+    setError(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (deleteEvent : boolean) : void => {
+
+    if(deleteEvent && eventToUpdate?.id){
+      handleRDeleteEvent(eventToUpdate?.id);
+      handleCloseModal();
+      return
+    }
     if (!title.trim()) {
       setError("Le titre est obligatoire.");
       return;
@@ -48,28 +68,37 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ userId, eventDate, 
       userIds,
     };
 
-    setEvent(newEvent);
-    closeModal(); // Fermer la modale après la création
+    if(eventToUpdate?.id) {
+      handleUpdateEvent({...newEvent, id: eventToUpdate.id});
+    }else{
+      handleAddEvent(newEvent);
+    }
+    handleCloseModal();
   };
 
   return (
-    <div className="modal-overlay" onClick={closeModal}>
+    <div className="modal-overlay" onClick={handleCloseModal}>
       <div className="modal-content" onClick={(event) => event.stopPropagation()}>
-        <button className="modal-close-btn" onClick={closeModal}>
+
+        <button className="modal-close-btn" onClick={handleCloseModal}>
           &times;
         </button>
-        <h2 className="modal-title">Créer un Événement</h2>
+
+        <h2 className="modal-title">{eventToUpdate ? "Mettre à jour l'événement" : "Créer un événement"}</h2>
+
         {error && <div className="modal-error">{error}</div>}
+
         <div className="modal-field">
           <label className="modal-label">Titre:</label>
           <input
             type="text"
-            value={title}
+            value={ title }
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Titre de l'événement"
             className="modal-input"
           />
         </div>
+
         <div className="modal-field">
           <label className="modal-label">Description:</label>
           <textarea
@@ -79,6 +108,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ userId, eventDate, 
             className="modal-textarea"
           />
         </div>
+
         <div className="modal-field">
           <label className="modal-label">Ajouter un utilisateur (ID):</label>
           <div className="modal-user-add">
@@ -94,22 +124,43 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ userId, eventDate, 
             </button>
           </div>
         </div>
+
         <div className="modal-participants">
           <h4>Participants:</h4>
           <ul className="modal-participants-list">
             {userIds.map((id) => (
               <li key={id} className="modal-participant">
                 Utilisateur ID: {id}
+
+                {id !== userId && (
+                  <button
+                    type="button"
+                    onClick={() => setUserIds(userIds.filter((userToFilterId) => userToFilterId !== id))}
+                    className="modal-remove-btn"
+                  >
+                    Supprimer
+                  </button>
+                )}
               </li>
             ))}
           </ul>
         </div>
-        <button onClick={handleSubmit} className="modal-submit-btn">
-          Créer l Événement
+
+        <button onClick={() => handleSubmit(false)} className="modal-submit-btn">
+          {eventToUpdate ? "Mettre a jour" : "Créer l Événement"}
         </button>
+
+        {eventToUpdate && (
+          <button
+            onClick={() => handleSubmit(true)}
+            className="modal-delete-btn"
+          >
+            Supprimer l&apos;événement
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
-export default CreateEventModal;
+export default EventModal;

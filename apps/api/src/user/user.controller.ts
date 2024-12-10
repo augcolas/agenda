@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
 import { Public } from '../decorators/public.decorator';
@@ -18,12 +19,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Role, User } from './entities/user';
 import { UserService } from './user.service';
 
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users') //route group
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Public()
   @Post()
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({ status: 201, description: 'User Created Successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       await this.userService.create(createUserDto);
@@ -41,6 +47,9 @@ export class UserController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'User Fetched Successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   async findAll() {
     try {
       let data: User[] = await this.userService.findAll();
@@ -59,6 +68,9 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a user by ID' })
+  @ApiResponse({ status: 200, description: 'User Fetched Successfully' })
+  @ApiResponse({ status: 404, description: 'User Not Found' })
   async findOne(@Param('id') id: string) {
     try {
       let data = await this.userService.findOne(+id);
@@ -78,6 +90,9 @@ export class UserController {
 
   @UseGuards(UserIdGuard)
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a user by ID' })
+  @ApiResponse({ status: 200, description: 'User Updated Successfully' })
+  @ApiResponse({ status: 404, description: 'User Not Found' })
   async update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -102,6 +117,9 @@ export class UserController {
 
   @UseGuards(UserIdGuard)
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiResponse({ status: 200, description: 'User Deleted Successfully' })
+  @ApiResponse({ status: 404, description: 'User Not Found' })
   async remove(@Param('id') id: string) {
     try {
       await this.userService.remove(+id);
