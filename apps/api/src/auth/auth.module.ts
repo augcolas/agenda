@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'node:path';
 
@@ -7,6 +8,9 @@ import { AuthService } from './auth.service';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '../../.env',
+    }),
     ClientsModule.register([
       {
         name: 'AUTHPROTO_PACKAGE',
