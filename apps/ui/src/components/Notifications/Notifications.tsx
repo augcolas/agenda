@@ -44,7 +44,7 @@ const Notifications: React.FC = () => {
     }
 
     if (user) {
-      NotificationService.getAllUserNotifications(token, user.id)
+      NotificationService.getAllUserNotifications(user.id)
         .then((response) => setNotifications(response))
         .catch((error) =>
           console.error("Failed to fetch notifications:", error),
@@ -130,7 +130,6 @@ const Notifications: React.FC = () => {
     if (!user) return;
     try {
       await NotificationService.deleteNotification(
-        token,
         notificationId,
         user.id,
       );
@@ -150,7 +149,7 @@ const Notifications: React.FC = () => {
   ) => {
     if (!user) return;
     try {
-      await NotificationService.updateNotifications(token, {
+      await NotificationService.updateNotifications({
         notifications: [
           {
             id: notificationId,

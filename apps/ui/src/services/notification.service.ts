@@ -8,13 +8,12 @@ const API_BASE_URL = "http://localhost:3000/notifications";
 
 export const NotificationService = {
   async getAllUserNotifications(
-    token: string,
     userId: number,
   ): Promise<GetNotificationListResponse["notifications"]> {
     const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
     });
     if (!response.ok) throw new Error(`Error: ${response.status}`);
@@ -23,7 +22,6 @@ export const NotificationService = {
   },
 
   async deleteNotification(
-    token: string,
     notificationId: string,
     userId: number,
   ): Promise<void> {
@@ -33,7 +31,7 @@ export const NotificationService = {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
       },
     );
@@ -41,14 +39,13 @@ export const NotificationService = {
   },
 
   async updateNotifications(
-    token: string,
     notifications: UpdateNotificationListRequest,
   ) {
     const response = await fetch(API_BASE_URL, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
       body: JSON.stringify(notifications),
     });
@@ -57,14 +54,13 @@ export const NotificationService = {
   },
 
   async addNotification(
-    token: string,
     notifications: AddNotificationListRequest,
   ) {
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
       },
       body: JSON.stringify(notifications),
     });
