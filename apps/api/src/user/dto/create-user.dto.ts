@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -22,11 +21,6 @@ export class CreateUserDto {
   @ApiProperty({ description: 'password' })
   password: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  @ApiProperty({ description: 'areNotificationsEnabled' })
-  areNotificationsEnabled: boolean;
-
   @IsEnum(Role)
   @ApiProperty({ description: 'role' })
   role: Role = Role.USER;
@@ -38,6 +32,5 @@ export class CreateUserDto {
   constructor(partial: Partial<CreateUserDto>) {
     Object.assign(this, partial);
     this.role = this.role || Role.USER;
-    this.areNotificationsEnabled = this.areNotificationsEnabled || true;
   }
 }

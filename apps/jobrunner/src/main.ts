@@ -1,11 +1,11 @@
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
+import {Logger} from '@nestjs/common';
+import {NestFactory} from '@nestjs/core';
+import {type MicroserviceOptions, Transport} from '@nestjs/microservices';
 // eslint-disable-next-line unicorn/import-style
-import { join } from 'node:path';
+import {join} from 'node:path';
 
-import { AppModule } from './app.module';
-import { RpcExceptionsInterceptor } from './interceptor/rpc.exceptions.interceptor';
+import {AppModule} from './app.module';
+import {RpcExceptionsInterceptor} from './interceptor/rpc.exceptions.interceptor';
 
 /**
  *
@@ -22,7 +22,7 @@ async function bootstrap() {
           __dirname,
           '../node_modules/@agenda/proto/notification.proto',
         ),
-        url: '0.0.0.0:3004',
+        url: `${process.env.JOBRUNNER_MICROSERVICE_HOST}:${process.env.JOBRUNNER_MICROSERVICE_PORT}`,
       },
     },
   );
@@ -31,4 +31,5 @@ async function bootstrap() {
   app.useGlobalInterceptors(new RpcExceptionsInterceptor());
   await app.listen();
 }
+
 void bootstrap();

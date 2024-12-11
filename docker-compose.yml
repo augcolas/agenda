@@ -1,13 +1,59 @@
 services:
+
   agenda_api:
-    build: ./apps/api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - AUTH_MICROSERVICE_HOST=agenda_auth
+      - AUTH_MICROSERVICE_PORT=3001
+      - JOBRUNNER_MICROSERVICE_HOST=agenda_jobrunner
+      - JOBRUNNER_MICROSERVICE_HOST_MICROSERVICE_PORT=3004
+    depends_on:
+      - postgres
+
+  agenda_auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: auth
+    ports:
+      - "3001:3001"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - AUTH_MICROSERVICE_HOST=agenda_auth
+      - AUTH_MICROSERVICE_PORT=3001
+    depends_on:
+      - postgres
+
+  agenda_jobrunner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: jobrunner
+    ports:
+      - "3004:3004"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - JOBRUNNER_MICROSERVICE_HOST=agenda_jobrunner
+      - JOBRUNNER_MICROSERVICE_PORT=3004
+    depends_on:
+      - postgres
 
   agenda_ui:
-    build: ./apps/ui
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ui
     ports:
-      - "8080:80"
-    depends_on:
-      - agenda_api
+      - "5173:5173"
 
   postgres:
     image: postgres
@@ -17,15 +63,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - ${POSTGRES_PORT}:5432
-
-  adminer:
-    image: adminer
-    container_name: adminer
-    environment:
-      ADMINER_DESIGN: pepa-linha
-      ADMINER_DEFAULT_SERVER: database
-    ports:
-      - 8082:8080
 
   maildev:
     image: maildev/maildev
@@ -37,17 +74,4 @@ services:
   redis:
     image: redis
     ports:
-      - 6379:6379
-
-  redis_insight:
-    image: redis/redisinsight:latest
-    ports:
-      - 5540:5540
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - redis_insight_volume:/data
-
-volumes:
-  redis_insight_volume:
-
+      - "6379:6379"

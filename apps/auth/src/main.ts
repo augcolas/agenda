@@ -16,7 +16,7 @@ async function bootstrap() {
       options: {
         package: 'authproto',
         protoPath: join(__dirname, '../node_modules/@agenda/proto/auth.proto'),
-        url: '0.0.0.0:3001',
+        url: `${process.env.AUTH_MICROSERVICE_HOST}:${process.env.AUTH_MICROSERVICE_PORT}`,
       },
     },
   );
