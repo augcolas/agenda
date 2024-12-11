@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env["VITE_BACK_URL"] ?? "http://localhost:3000",
 });
 
 api.interceptors.request.use(
@@ -21,8 +21,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("authToken");
-      window.location.reload();
+      const currentPath = window.location.pathname;
+      if (currentPath !== "/login" && currentPath !== "/register") {
+        localStorage.removeItem("authToken");
+        window.location.reload();
+      }
     }
     return Promise.reject(error);
   },

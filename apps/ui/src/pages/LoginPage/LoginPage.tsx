@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="auth-form">
       <h1>Connexion</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <LoginForm onSubmit={handleLogin} />

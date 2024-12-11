@@ -33,7 +33,7 @@ const SignInPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="auth-form">
       <h1>Inscription</h1>
 
       <SignInForm onSubmit={handleFormSubmit} />

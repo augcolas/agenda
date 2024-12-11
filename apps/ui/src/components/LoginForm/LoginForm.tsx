@@ -1,16 +1,17 @@
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import "./LoginForm.css"
+import "./LoginForm.css";
+import { Link } from "react-router-dom";
 
 interface LoginFormProps {
   readonly onSubmit: (email: string, password: string) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,6 +43,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
           className="form-input"
         />
       </label>
+
+      <Link to="/forget-password" className="forget-password-link">
+        Mot de passe oublié ?
+      </Link>
 
       <button type="submit" className="submit-button">
         Se connecter

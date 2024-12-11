@@ -1,6 +1,12 @@
 import { BooleanResponse, TokenResponse } from '@agenda/proto/auth';
 import { Body, Controller, Post, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { Observable } from 'rxjs';
 
@@ -39,21 +45,26 @@ export class AuthController {
   }
 
   @Public()
-  @Post('forgotPassword')
+  @Post('forgot-password')
   @ApiOperation({ summary: 'Forgot password' })
   @ApiBody({ type: EmailDto })
   @ApiResponse({ status: 200, description: 'Password reset email sent.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  forgotPassword(@Body() forgotPassword: EmailDto): Observable<BooleanResponse> {
+  forgotPassword(
+    @Body() forgotPassword: EmailDto,
+  ): Observable<BooleanResponse> {
     return this.authService.forgotPassword({ email: forgotPassword.email });
   }
 
-  @Post('updatePassword')
+  @Post('update-password')
   @ApiOperation({ summary: 'Update password' })
   @ApiBody({ type: PasswordDto })
-  @ApiResponse({ status: 200, description: 'Password updated successfully.'})
+  @ApiResponse({ status: 200, description: 'Password updated successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  updatePassword(@Body() password: PasswordDto, @Req() req: Request): Observable<BooleanResponse> {
+  updatePassword(
+    @Body() password: PasswordDto,
+    @Req() req: Request,
+  ): Observable<BooleanResponse> {
     const hashedPassword = bcrypt.hashSync(password.password, 10);
     return this.authService.updateUserByResetToken({
       token: req['token'],

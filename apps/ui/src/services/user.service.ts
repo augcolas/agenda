@@ -55,3 +55,32 @@ export const getUsersService = async (): Promise<UserInterface[]> => {
     throw error;
   }
 };
+
+export const forgotPasswordService = async (email: string): Promise<string> => {
+  try {
+    await api.post("/auth/forgot-password", { email });
+
+    return "Email envoyé avec succès";
+  } catch (error) {
+    console.error("Error sending the email:", error);
+    throw error;
+  }
+};
+
+export const resetPasswordService = async (
+  password: string,
+  token: string,
+): Promise<string> => {
+  try {
+    await api.post(
+      "/auth/update-password",
+      { password },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+
+    return "Mot de passe mis à jour avec succès";
+  } catch (error) {
+    console.error("Error updating the password:", error);
+    throw error;
+  }
+};
