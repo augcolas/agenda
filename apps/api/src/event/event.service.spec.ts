@@ -22,7 +22,7 @@ describe('EventService', () => {
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.POSTGRES_HOST,
-          port: Number.parseInt(process.env.POSTGRES_PORT),
+          port: Number.parseInt(process.env.POSTGRES_TEST_PORT),
           password: process.env.POSTGRES_PASSWORD,
           username: process.env.POSTGRES_USER,
           autoLoadEntities: true,
@@ -54,7 +54,6 @@ describe('EventService', () => {
       },
     ] as DeepPartial<User>[]);
     /* eslint-enable sonarjs/no-hardcoded-credentials */
-
   });
 
   beforeEach(async () => {
@@ -87,7 +86,13 @@ describe('EventService', () => {
     const events = await service.findAll(1);
 
     expect(events).toEqual([
-      { id: expect.any(Number), users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) }
+      {
+        id: expect.any(Number),
+        users: [1],
+        description: 'Test Event',
+        title: 'Test Event',
+        date: expect.any(String),
+      },
     ]);
   });
 
@@ -102,13 +107,21 @@ describe('EventService', () => {
     const userId = 1;
     const eventId = 1;
     const events = await service.findOne(userId, eventId);
-    expect(events).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
+    expect(events).toEqual({
+      id: expect.any(Number),
+      users: [1],
+      description: 'Test Event',
+      title: 'Test Event',
+      date: expect.any(String),
+    });
   });
 
   it('should throw an error if event not found', async () => {
     const userId = 1;
     const eventId = 2;
-    await expect(service.findOne(userId, eventId)).rejects.toThrow('Event Not Found');
+    await expect(service.findOne(userId, eventId)).rejects.toThrow(
+      'Event Not Found',
+    );
   });
 
   // --- Tests create ---
@@ -120,7 +133,13 @@ describe('EventService', () => {
       date: new Date().toISOString(),
     });
 
-    expect(event).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event 2', title: 'Test Event 2', date: expect.any(String) });
+    expect(event).toEqual({
+      id: expect.any(Number),
+      users: [1],
+      description: 'Test Event 2',
+      title: 'Test Event 2',
+      date: expect.any(String),
+    });
   });
 
   // --- Tests update ---
@@ -133,7 +152,13 @@ describe('EventService', () => {
       title: 'Test Event Updated',
     });
 
-    expect(event).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event Updated', title: 'Test Event Updated', date: expect.any(String) });
+    expect(event).toEqual({
+      id: expect.any(Number),
+      users: [1],
+      description: 'Test Event Updated',
+      title: 'Test Event Updated',
+      date: expect.any(String),
+    });
   });
 
   // --- Tests remove ---
@@ -142,6 +167,12 @@ describe('EventService', () => {
     const eventId = 1;
     const event = await service.remove(userId, eventId);
 
-    expect(event).toEqual({ id:undefined, users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
+    expect(event).toEqual({
+      id: undefined,
+      users: [1],
+      description: 'Test Event',
+      title: 'Test Event',
+      date: expect.any(String),
+    });
   });
 });

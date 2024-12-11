@@ -1,5 +1,12 @@
-import { User } from 'src/user/entities/user';
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { User } from '../../user/entities/user';
 
 @Entity()
 export class Event {

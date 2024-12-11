@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { User } from 'src/user/entities/user';
 
+import { User } from '../../user/entities/user';
 
 export class CreateEventDto {
   @IsNotEmpty()

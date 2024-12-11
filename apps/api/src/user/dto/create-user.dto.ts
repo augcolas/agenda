@@ -7,8 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Event } from 'src/event/entities/event';
 
+import { Event } from '../../event/entities/event';
 import { Role } from '../entities/user';
 
 export class CreateUserDto {

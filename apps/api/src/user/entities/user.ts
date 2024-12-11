@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
-import { Event } from 'src/event/entities/event';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Event } from '../../event/entities/event';
 
 @Entity()
 export class User {
@@ -23,8 +24,7 @@ export class User {
   @Column({ nullable: true })
   resetPasswordToken: string;
 
-  @ManyToMany(() => Event, event => event.users,
-  { nullable: true })
+  @ManyToMany(() => Event, (event) => event.users, { nullable: true })
   events?: Event[] | null;
 }
 

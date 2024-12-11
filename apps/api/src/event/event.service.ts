@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
+import { UserService } from '../user/user.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { Event } from './entities/event';
@@ -17,21 +17,21 @@ export class EventService {
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
     const users = await Promise.all(
-        createEventDto.users.map(async (userId) => {
-            const user = await this.userService.findOne(userId);
-            if (!user) {
-                throw new HttpException(`User with ID ${userId} not found`, 404);
-            }
-            return user;
-        }),
+      createEventDto.users.map(async (userId) => {
+        const user = await this.userService.findOne(userId);
+        if (!user) {
+          throw new HttpException(`User with ID ${userId} not found`, 404);
+        }
+        return user;
+      }),
     );
 
     const event = this.eventRepository.create({
-        ...createEventDto,
-        users,
+      ...createEventDto,
+      users,
     });
 
-    await this.eventRepository.save(event)
+    await this.eventRepository.save(event);
     return this.findOne(event.id, event.id);
   }
 
@@ -91,25 +91,29 @@ export class EventService {
     id: number,
     updateEventDto: UpdateEventDto,
   ): Promise<Event> {
-      const existingEvent = await this.findOne(userId, id);
+    const existingEvent = await this.findOne(userId, id);
 
-      const users = await Promise.all(
-          updateEventDto.users.map(async (updateUserId) => {
-              const user = await this.userService.findOne(updateUserId);
-              if (!user) {
-                  throw new HttpException(`User with ID ${updateUserId} not found`, 404);
-              }
-              return user;
-          }),
-      );
+    const users = await Promise.all(
+      updateEventDto.users.map(async (updateUserId) => {
+        const user = await this.userService.findOne(updateUserId);
+        if (!user) {
+          throw new HttpException(
+            `User with ID ${updateUserId} not found`,
+            404,
+          );
+        }
+        return user;
+      }),
+    );
 
-      existingEvent.users = users;
-      existingEvent.date = updateEventDto.date || existingEvent.date;
-      existingEvent.title = updateEventDto.title || existingEvent.title;
-      existingEvent.description = updateEventDto.description || existingEvent.description;
+    existingEvent.users = users;
+    existingEvent.date = updateEventDto.date || existingEvent.date;
+    existingEvent.title = updateEventDto.title || existingEvent.title;
+    existingEvent.description =
+      updateEventDto.description || existingEvent.description;
 
-      await this.eventRepository.save(existingEvent);
-      return this.findOne(userId, id);
+    await this.eventRepository.save(existingEvent);
+    return this.findOne(userId, id);
   }
 
   async remove(userId: number, id: number): Promise<Event> {
