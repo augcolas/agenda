@@ -1,26 +1,27 @@
 // LogoutPage.tsx
-import type React from 'react';
+import type React from "react";
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { useAuth } from '../../contexts/AuthContext';
-import { logoutUserService } from '../../services/user.service';
-
+import { useAuth } from "../../contexts/AuthContext";
+import { logoutUserService } from "../../services/user.service";
 
 const LogoutPage: React.FC = () => {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    logout();
-
-    logoutUserService(token).catch((error) => {
-      console.error('Error logging out the user:', error);
-    });
-
-    navigate('/');
-  }, [logout, navigate, token]);
+    logoutUserService()
+      .then(() => {
+        logout();
+        navigate("/");
+        return null;
+      })
+      .catch((error) => {
+        console.error("Error logging out the user:", error);
+      });
+  }, [logout, navigate]);
 
   return (
     <div>

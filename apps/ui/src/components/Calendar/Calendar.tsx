@@ -22,7 +22,7 @@ interface WeekProps {
 }
 
 const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [eventToUpdate, setEventToUpdate] = useState<Event | null>(null);
   const [modalData, setModalData] = useState<{ date: Date; isOpen: boolean }>({
@@ -32,18 +32,16 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
   const [users, setUsers] = useState<UserInterface[]>([]);
 
   useEffect(() => {
-    if (!token) return;
-    EventService.getEvents(token)
+    EventService.getEvents()
       .then((eventArray: Event[]) => setEvents(eventArray))
       .catch((error) => console.error("Failed to fetch events:", error));
-  }, [token, modalData.isOpen]);
+  }, [modalData.isOpen]);
 
   useEffect(() => {
-    if (!token) return;
-    getUsersService(token)
+    getUsersService()
       .then((allUsers) => setUsers(allUsers))
       .catch((error) => console.error("Failed to fetch users:", error));
-  }, [token]);
+  }, []);
 
   const getWeekDays = () => {
     const weekDays: Date[] = [];
@@ -84,7 +82,7 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
   const handleAddEvent = async (newEvent: AddEvent) => {
     const addEvent = await EventService.addEvent(newEvent);
     setModalData((previous) => ({ ...previous, isOpen: false }));
-    const fetchedEvent = await EventService.getEvents(token);
+    const fetchedEvent = await EventService.getEvents();
     setEvents(fetchedEvent);
 
     const notifications: AddNotificationListRequest["notifications"] = [];
@@ -101,17 +99,17 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
 
   const handleUpdateEvent = async (updatedEvent: UpdateEvent) => {
     await EventService.updateEvent(updatedEvent);
-    const fetchedEvent = await EventService.getEvents(token);
+    const fetchedEvent = await EventService.getEvents();
     setEvents(fetchedEvent);
     setEventToUpdate(null);
-  }
+  };
 
   const handleRDeleteEvent = async (eventId: number) => {
     await EventService.deleteEvent(eventId);
-    const fetchedEvent = await EventService.getEvents(token);
+    const fetchedEvent = await EventService.getEvents();
     setEvents(fetchedEvent);
     setEventToUpdate(null);
-  }
+  };
 
   const handleCloseModal = () => {
     setEventToUpdate(null);

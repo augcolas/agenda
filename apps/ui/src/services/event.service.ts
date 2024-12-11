@@ -1,53 +1,26 @@
-const API_BASE_URL = "http://localhost:3000/events";
+import api from "./api.service";
+const API_BASE_URL = "/events";
 
 import { type AddEvent, type Event, type UpdateEvent } from "../models/Event";
 
 export const EventService = {
-  async getEvents(token: string): Promise<Event[]> {
-    const response = await fetch(API_BASE_URL, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+  async getEvents(): Promise<Event[]> {
+    const response = await api.get(API_BASE_URL);
+    return response.data;
   },
 
   async addEvent(event: AddEvent) {
-    const response = await fetch(API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-      body: JSON.stringify(event),
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+    const response = await api.post(API_BASE_URL, event);
+    return response.data;
   },
 
   async deleteEvent(eventId: number) {
-    const response = await fetch(`${API_BASE_URL}/${eventId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+    const response = await api.delete(`${API_BASE_URL}/${eventId}`);
+    return response.data;
   },
 
   async updateEvent(event: UpdateEvent) {
-    const response = await fetch(`${API_BASE_URL}/${event.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-      body: JSON.stringify(event),
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+    const response = await api.patch(`${API_BASE_URL}/${event.id}`, event);
+    return response.data;
   },
 };

@@ -4,67 +4,32 @@ import {
   type UpdateNotificationListRequest,
 } from "@agenda/proto/notification";
 
-const API_BASE_URL = "http://localhost:3000/notifications";
+import api from "./api.service";
+
+const API_BASE_URL = "/notifications";
 
 export const NotificationService = {
   async getAllUserNotifications(
     userId: number,
   ): Promise<GetNotificationListResponse["notifications"]> {
-    const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    const data: GetNotificationListResponse = await response.json();
-    return data.notifications;
+    const response = await api.get(`${API_BASE_URL}/user/${userId}`);
+    return response.data.notifications;
   },
 
   async deleteNotification(
     notificationId: string,
     userId: number,
   ): Promise<void> {
-    const response = await fetch(
-      `${API_BASE_URL}/${userId}/${notificationId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      },
-    );
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    await api.delete(`${API_BASE_URL}/${userId}/${notificationId}`);
   },
 
-  async updateNotifications(
-    notifications: UpdateNotificationListRequest,
-  ) {
-    const response = await fetch(API_BASE_URL, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-      body: JSON.stringify(notifications),
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+  async updateNotifications(notifications: UpdateNotificationListRequest) {
+    const response = await api.patch(API_BASE_URL, notifications);
+    return response.data;
   },
 
-  async addNotification(
-    notifications: AddNotificationListRequest,
-  ) {
-    const response = await fetch(API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-      body: JSON.stringify(notifications),
-    });
-    if (!response.ok) throw new Error(`Error: ${response.status}`);
-    return response.json();
+  async addNotification(notifications: AddNotificationListRequest) {
+    const response = await api.post(API_BASE_URL, notifications);
+    return response.data;
   },
 };

@@ -1,11 +1,11 @@
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import LoginForm from '../../components/LoginForm/LoginForm';
-import { useAuth } from '../../contexts/AuthContext';
-import { logUserService } from '../../services/user.service';
+import LoginForm from "../../components/LoginForm/LoginForm";
+import { useAuth } from "../../contexts/AuthContext";
+import { logUserService } from "../../services/user.service";
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -17,25 +17,25 @@ const LoginPage: React.FC = () => {
     try {
       const jwt = await logUserService(email, pwd);
       login(jwt.token);
-      navigate('/');
+      navigate("/");
     } catch (error_: unknown) {
       if (error_ instanceof Error) {
-        if (error_.message.includes('401')) {
-          setError('Invalid credentials. Please try again.');
+        if (error_.message.includes("401")) {
+          setError("Email ou mot de passe incorrect.");
         } else {
-          setError('An unexpected error occurred. Please try again later.');
+          setError("Une erreur est survenue.");
         }
       } else {
-        setError('An unknown error occurred.');
+        setError("Une erreur est survenue.");
       }
-      console.error('Login failed:', error_);
+      console.error("Login failed:", error_);
     }
   };
 
   return (
     <div>
-      <h1>Login</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h1>Connexion</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <LoginForm onSubmit={handleLogin} />
     </div>
   );

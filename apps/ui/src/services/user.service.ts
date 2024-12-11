@@ -1,25 +1,21 @@
+import axios from "axios";
+
 import { type UserInterface } from "../interfaces/user.interface";
+import api from "./api.service";
 
 export const createUserService = async (
   email: string,
   password: string,
 ): Promise<string> => {
   try {
-    const response = await fetch("http://localhost:3000/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    await api.post("/users", { email, password });
 
-    if (response.ok) {
-      return "User created successfully";
-    } else {
-      const errorData = await response.json();
+    return "User created successfully";
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const errorData = error.response.data;
       return `Error: ${errorData.message || "Unknown error"}`;
     }
-  } catch (error) {
     return `Network error: ${error instanceof Error ? error.message : "Unknown error"}`;
   }
 };
@@ -29,21 +25,9 @@ export const logUserService = async (
   password: string,
 ): Promise<{ token: string }> => {
   try {
-    const response = await fetch(`http://localhost:3000/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await api.post("/auth/login", { email, password });
 
-    if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`,
-      );
-    }
-
-    const { token }: { token: string } = await response.json();
+    const { token }: { token: string } = response.data;
     return { token };
   } catch (error) {
     console.error("Error logging in the user:", error);
@@ -51,47 +35,23 @@ export const logUserService = async (
   }
 };
 
-
-export const logoutUserService = async (token: string): Promise<void> => {
+export const logoutUserService = async (): Promise<void> => {
   try {
-    const response = await fetch(`http://localhost:3000/auth/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`,
-      );
-    }
+    await api.post("/auth/logout", {});
   } catch (error) {
     console.error("Error logging out the user:", error);
     throw error;
   }
-}
+};
 
-export const getUsersService = async (token: string): Promise<UserInterface[]> => {
+export const getUsersService = async (): Promise<UserInterface[]> => {
   try {
-    const response = await fetch("http://localhost:3000/users", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get("/users");
 
-    if (!response.ok) {
-      throw new Error(
-        `HTTP Error: ${response.status} - ${response.statusText}`,
-      );
-    }
-
-    const data = await response.json();
-    const users: UserInterface[] = data.data;
+    const users: UserInterface[] = response.data.data;
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;
   }
-}
+};
