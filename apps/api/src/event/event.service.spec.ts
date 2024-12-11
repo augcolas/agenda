@@ -1,10 +1,10 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { type DeepPartial, type Repository } from 'typeorm';
 
+import { User } from '../user/entities/user';
+import { UserService } from '../user/user.service';
 import { Event } from './entities/event';
 import { EventService } from './event.service';
 
@@ -29,14 +29,21 @@ describe('EventService', () => {
           database: process.env.POSTGRES_TEST_DB,
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([Event]),
+        TypeOrmModule.forFeature([Event, User]),
       ],
-      providers: [EventService],
+      providers: [EventService, UserService],
     }).compile();
 
     service = module.get<EventService>(EventService);
     repo = module.get<Repository<Event>>(getRepositoryToken(Event));
     userRepo = module.get<Repository<User>>(getRepositoryToken(User));
+  });
+
+  beforeEach(async () => {
+    await repo.delete({});
+    await userRepo.delete({});
+    await repo.query(`ALTER SEQUENCE user_id_seq RESTART WITH 1`);
+    await repo.query(`ALTER SEQUENCE event_id_seq RESTART WITH 1`);
 
     /* eslint-disable sonarjs/no-hardcoded-credentials */
     await userRepo.save([
@@ -53,45 +60,40 @@ describe('EventService', () => {
         role: 'USER',
       },
     ] as DeepPartial<User>[]);
-    /* eslint-enable sonarjs/no-hardcoded-credentials */
-  });
 
-  beforeEach(async () => {
     const user1 = await userRepo.findOneBy({ id: 1 });
     const user2 = await userRepo.findOneBy({ id: 2 });
-
     await repo.save([
       {
         users: [user1],
         description: 'Test Event',
         title: 'Test Event',
-        date: new Date().toISOString(),
+        date: '2024-01-01T00:00:00.000Z',
       },
       {
-        users: [user2],
-        description: 'Test Event Not Owned',
-        title: 'Test Event Not Owned',
-        date: new Date().toISOString(),
+        users: [user1, user2],
+        description: 'Test Event Multiple Users',
+        title: 'Test Event Multiple Users',
+        date: '2024-01-02T00:00:00.000Z',
       },
     ]);
   });
 
-  afterEach(async () => {
-    await repo.clear();
-    await repo.query(`ALTER SEQUENCE event_id_seq RESTART WITH 1`);
-  });
-
-  // --- Tests findAll ---
   it('should find all events for the user', async () => {
     const events = await service.findAll(1);
 
     expect(events).toEqual([
       {
-        id: expect.any(Number),
-        users: [1],
+        date: '2024-01-01T00:00:00.000Z',
         description: 'Test Event',
+        id: 1,
         title: 'Test Event',
-        date: expect.any(String),
+        users: [
+          {
+            email: 'test@gmail.com',
+            id: 1,
+          },
+        ],
       },
     ]);
   });
@@ -102,47 +104,54 @@ describe('EventService', () => {
     expect(events).toEqual([]);
   });
 
-  // --- Tests findOne ---
   it('should find one event for the user', async () => {
     const userId = 1;
     const eventId = 1;
     const events = await service.findOne(userId, eventId);
     expect(events).toEqual({
-      id: expect.any(Number),
-      users: [1],
+      date: '2024-01-01T00:00:00.000Z',
       description: 'Test Event',
+      id: 1,
       title: 'Test Event',
-      date: expect.any(String),
+      users: [
+        {
+          email: 'test@gmail.com',
+          id: 1,
+        },
+      ],
     });
   });
 
-  it('should throw an error if event not found', async () => {
-    const userId = 1;
-    const eventId = 2;
+  it('should throw an error if user not associated to event', async () => {
+    const userId = 2;
+    const eventId = 1;
     await expect(service.findOne(userId, eventId)).rejects.toThrow(
       'Event Not Found',
     );
   });
 
-  // --- Tests create ---
   it('should create an event', async () => {
     const event = await service.create({
       users: [1],
       description: 'Test Event 2',
       title: 'Test Event 2',
-      date: new Date().toISOString(),
+      date: '2024-01-03T00:00:00.000Z',
     });
 
     expect(event).toEqual({
-      id: expect.any(Number),
-      users: [1],
+      date: '2024-01-03T00:00:00.000Z',
       description: 'Test Event 2',
+      id: 3,
       title: 'Test Event 2',
-      date: expect.any(String),
+      users: [
+        {
+          email: 'test@gmail.com',
+          id: 1,
+        },
+      ],
     });
   });
 
-  // --- Tests update ---
   it('should update an event', async () => {
     const userId = 1;
     const eventId = 1;
@@ -153,26 +162,34 @@ describe('EventService', () => {
     });
 
     expect(event).toEqual({
-      id: expect.any(Number),
-      users: [1],
+      date: '2024-01-01T00:00:00.000Z',
       description: 'Test Event Updated',
+      id: 1,
       title: 'Test Event Updated',
-      date: expect.any(String),
+      users: [
+        {
+          email: 'test@gmail.com',
+          id: 1,
+        },
+      ],
     });
   });
 
-  // --- Tests remove ---
   it('should remove an event', async () => {
     const userId = 1;
     const eventId = 1;
     const event = await service.remove(userId, eventId);
 
     expect(event).toEqual({
-      id: undefined,
-      users: [1],
+      date: '2024-01-01T00:00:00.000Z',
       description: 'Test Event',
       title: 'Test Event',
-      date: expect.any(String),
+      users: [
+        {
+          email: 'test@gmail.com',
+          id: 1,
+        },
+      ],
     });
   });
 });

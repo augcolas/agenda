@@ -64,6 +64,7 @@ export class EventService {
       throw new HttpException('Internal Server Error', 500);
     }
   }
+
   async findOne(userId: number, id: number): Promise<Event> {
     const eventData = await this.eventRepository
       .createQueryBuilder('event')
@@ -77,10 +78,20 @@ export class EventService {
         'user.email',
       ])
       .where('event.id = :id', { id })
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('eu.eventId')
+          .from('event_users_user', 'eu')
+          .where('eu.userId = :userId', { userId })
+          .getQuery();
+
+        return `event.id IN ${subQuery}`;
+      })
       .getOne();
 
     if (!eventData) {
-      throw new HttpException('Event Not Found', 404);
+      throw new HttpException('Event Not Found or Access Denied', 404);
     }
 
     return eventData;
