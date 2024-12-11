@@ -21,6 +21,13 @@ RUN pnpm run build
 EXPOSE 3001
 CMD ["pnpm", "start"]
 
+FROM base AS jobrunner
+WORKDIR /agenda/apps/jobrunner
+RUN pnpm run build
+
+EXPOSE 3004
+CMD ["pnpm", "start"]
+
 FROM base AS ui
 WORKDIR /agenda/apps/ui
 RUN pnpm run build

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 // eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
@@ -9,12 +10,15 @@ import { NotificationService } from './notification.service';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '../../.env',
+    }),
     ClientsModule.register([
       {
         name: 'NOTIFICATIONPROTO_PACKAGE',
         transport: Transport.GRPC,
         options: {
-          url: '0.0.0.0:3004',
+          url: `${process.env.JOBRUNNER_MICROSERVICE_HOST}:${process.env.JOBRUNNER_MICROSERVICE_PORT}`,
           package: 'notificationproto',
           protoPath: join(
             __dirname,

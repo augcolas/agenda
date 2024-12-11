@@ -12,6 +12,8 @@ services:
       - REDIS_HOST=redis
       - AUTH_MICROSERVICE_HOST=agenda_auth
       - AUTH_MICROSERVICE_PORT=3001
+      - JOBRUNNER_MICROSERVICE_HOST=agenda_jobrunner
+      - JOBRUNNER_MICROSERVICE_HOST_MICROSERVICE_PORT=3004
     depends_on:
       - postgres
 
@@ -27,7 +29,21 @@ services:
       - REDIS_HOST=redis
       - AUTH_MICROSERVICE_HOST=agenda_auth
       - AUTH_MICROSERVICE_PORT=3001
+    depends_on:
+      - postgres
 
+  agenda_jobrunner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: jobrunner
+    ports:
+      - "3004:3004"
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - JOBRUNNER_MICROSERVICE_HOST=agenda_jobrunner
+      - JOBRUNNER_MICROSERVICE_PORT=3004
     depends_on:
       - postgres
 
