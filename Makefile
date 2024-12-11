@@ -58,3 +58,10 @@ lint:
 	@pnpm --filter jobrunner run lint
 	@echo "linting auth"
 	@pnpm --filter auth run lint
+
+.PHONY: tests
+tests:
+	@echo "starting docker compose"
+	@docker compose -f docker-compose.dev.yml up -d
+	@echo "testing"
+	@pnpm --filter api run test
