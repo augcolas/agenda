@@ -1,3 +1,4 @@
+name: agenda-dev
 services:
   postgres:
     image: postgres
