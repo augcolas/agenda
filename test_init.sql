@@ -10,6 +10,8 @@ CREATE TABLE "public"."event" (
     CONSTRAINT "PK_30c2f3bbaf6d34a55f8ae6e4614" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
+INSERT INTO "event" ("id", "date", "title", "description") VALUES
+(1,	'2024-12-13T08:00:00.000Z',	'Démo Ynov',	'Démo finale pour le cours de Web Services');
 
 DROP TABLE IF EXISTS "event_users_user";
 CREATE TABLE "public"."event_users_user" (
@@ -22,6 +24,9 @@ CREATE INDEX "IDX_a79703c5a43b536a49e3e4713e" ON "public"."event_users_user" USI
 
 CREATE INDEX "IDX_ddfe947d856e921a02d7ab2369" ON "public"."event_users_user" USING btree ("eventId");
 
+INSERT INTO "event_users_user" ("eventId", "userId") VALUES
+(1,	2),
+(1,	3);
 
 DROP TABLE IF EXISTS "user";
 DROP SEQUENCE IF EXISTS user_id_seq;
@@ -45,5 +50,3 @@ INSERT INTO "user" ("id", "email", "password", "role", "resetPasswordToken") VAL
 
 ALTER TABLE ONLY "public"."event_users_user" ADD CONSTRAINT "FK_a79703c5a43b536a49e3e4713ea" FOREIGN KEY ("userId") REFERENCES "user"(id) NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."event_users_user" ADD CONSTRAINT "FK_ddfe947d856e921a02d7ab2369e" FOREIGN KEY ("eventId") REFERENCES event(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
-
--- 2024-12-11 16:03:50.956438+00
