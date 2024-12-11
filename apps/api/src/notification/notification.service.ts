@@ -16,7 +16,7 @@ export class NotificationService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const subscriber = this.redisService.duplicate(); // Create a separate Redis connection for subscriptions
+    const subscriber = this.redisService.duplicate();
     await subscriber.subscribe('notifications', (err) => {
       if (err) {
         console.error('Failed to subscribe to notifications channel:', err);

@@ -13,13 +13,12 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (email: string, pwd: string) => {
-    setError(null); // Clear any existing error
+    setError(null);
     try {
       const jwt = await logUserService(email, pwd);
       login(jwt.token);
-      navigate('/'); // Redirect to calendar page
+      navigate('/');
     } catch (error_: unknown) {
-      // Handle different error cases
       if (error_ instanceof Error) {
         if (error_.message.includes('401')) {
           setError('Invalid credentials. Please try again.');

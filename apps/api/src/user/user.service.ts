@@ -12,26 +12,46 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+    ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     createUserDto.password = await bcrypt.hash(
       createUserDto.password,
       +process.env.BCRYPT_PASSWORD_SALT,
     );
+
     const userData = this.userRepository.create(createUserDto);
     return this.userRepository.save(userData);
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    try {
+      return await this.userRepository.find();
+    }catch (error) {
+      console.error(error);
+      throw new HttpException('Internal Server Error', 500);
+    }
   }
 
   async findOne(id: number): Promise<User> {
-    const userData = await this.userRepository.findOneBy({ id });
+    const userData = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.events', 'event')
+      .select([
+        'user.id',
+        'user.email',
+        'event.id',
+        'event.title',
+        'event.date',
+        'event.description',
+      ])
+      .where('user.id = :id', { id })
+      .getOne();
+
     if (!userData) {
       throw new HttpException('User Not Found', 404);
     }
+
     return userData;
   }
 
@@ -43,7 +63,10 @@ export class UserService {
         +process.env.BCRYPT_PASSWORD_SALT,
       );
     }
-    const userData = this.userRepository.merge(existingUser, updateUserDto);
+
+    const userData = this.userRepository.merge(existingUser, {
+      ...updateUserDto,
+    });
     return this.userRepository.save(userData);
   }
 

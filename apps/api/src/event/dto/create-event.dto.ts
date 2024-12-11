@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
+import { User } from '../../user/entities/user';
 
 export class CreateEventDto {
-  @IsNumber({}, { each: true })
-  @ApiProperty({ description: 'userIds', type: [Number] })
-  userIds: number[];
+  @IsNotEmpty()
+  @ApiProperty({ description: 'users', type: [User['id']] })
+  users: User['id'][];
 
   @IsNotEmpty()
   @ApiProperty({ description: 'date' })

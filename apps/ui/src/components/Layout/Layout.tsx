@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className={`mainLayout ${location.pathname === "/" ? "home" : page}`}>
       <header>
         <h1>
-          <Link to="/">Event Manager</Link>
+          <Link to="/">Agenda</Link>
         </h1>
         {isAuthenticated ? (
           <Fragment>
@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
       <main>{children}</main>
       <footer>
-        <p>&copy; 2021 - Event Manager</p>
+        <p>&copy; 2021 - Agenda</p>
       </footer>
     </div>
   );

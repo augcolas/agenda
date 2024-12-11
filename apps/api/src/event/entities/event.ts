@@ -1,12 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { User } from '../../user/entities/user';
 
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', { array: true })
-  userIds: number[];
+  @ManyToMany(() => User, (user) => user.events, { cascade: true, eager: true })
+  @JoinTable()
+  users: User[];
 
   @Column()
   date: string;

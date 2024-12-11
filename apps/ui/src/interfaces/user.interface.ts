@@ -1,8 +1,8 @@
 export interface UserInterface {
     id: number,
     email: string,
-    role: Role
     areNotificationsEnabled?: boolean,
+    role?: Role
 }
 
 export enum Role {

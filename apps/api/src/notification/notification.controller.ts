@@ -78,7 +78,7 @@ export class NotificationController {
     return this.microserviceNotificationService.remove({ id, userId });
   }
 
-  @Delete('/user/:id')
+  @Delete('/user/:id/notifications')
   @ApiOperation({ summary: 'Remove all notifications for a user' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({ status: 200, description: 'All notifications for the user removed successfully' })

@@ -1,5 +1,4 @@
 // CalendarPage.tsx
-
 import { useState } from "react";
 
 import "./CalendarPage.css";
@@ -8,7 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const CalendarPage = () => {
   const { user } = useAuth();
-  const [view, setView] = useState<"day" | "week">("day");
+  const [view, setView] = useState<"day" | "week">("week");
   const [currentDate] = useState(new Date());
   const [calendarDate, setCalendarDate] = useState(new Date());
 

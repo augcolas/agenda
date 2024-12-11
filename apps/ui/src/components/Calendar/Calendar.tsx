@@ -6,11 +6,13 @@ import "./Calendar.css";
 
 import { useEffect, useState } from "react";
 
-import type { Event } from "../../models/Event";
+import type { AddEvent, Event, UpdateEvent } from "../../models/Event";
 
 import { useAuth } from "../../contexts/AuthContext";
+import { type UserInterface } from "../../interfaces/user.interface";
 import { EventService } from "../../services/event.service";
 import { NotificationService } from "../../services/notification.service";
+import { getUsersService } from "../../services/user.service";
 import { EventCell } from "../EventCell/EventCell";
 import EventModal from "../EventModal/EventModal";
 
@@ -27,6 +29,7 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
     date: new Date(),
     isOpen: false,
   });
+  const [users, setUsers] = useState<UserInterface[]>([]);
 
   useEffect(() => {
     if (!token) return;
@@ -34,6 +37,13 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
       .then((eventArray: Event[]) => setEvents(eventArray))
       .catch((error) => console.error("Failed to fetch events:", error));
   }, [token, modalData.isOpen]);
+
+  useEffect(() => {
+    if (!token) return;
+    getUsersService(token)
+      .then((allUsers) => setUsers(allUsers))
+      .catch((error) => console.error("Failed to fetch users:", error));
+  }, [token]);
 
   const getWeekDays = () => {
     const weekDays: Date[] = [];
@@ -46,7 +56,7 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
       }
       case "week": {
         const day = currentDate.getDay();
-        const adjustment = day === 0 ? -6 : 1 - day; // Adjust for Monday as the start of the week
+        const adjustment = day === 0 ? -6 : 1 - day;
         startOfWeek.setDate(currentDate.getDate() + adjustment);
 
         for (let index = 0; index < 7; index++) {
@@ -71,16 +81,16 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
     setModalData({ date: eventDate, isOpen: true });
   };
 
-  const handleAddEvent = async (newEvent: Event) => {
+  const handleAddEvent = async (newEvent: AddEvent) => {
     const addEvent = await EventService.addEvent(newEvent);
-    setModalData((previous) => ({ ...previous, isOpen: false })); // Fermer la modale
+    setModalData((previous) => ({ ...previous, isOpen: false }));
     const fetchedEvent = await EventService.getEvents(token);
     setEvents(fetchedEvent);
 
     const notifications: AddNotificationListRequest["notifications"] = [];
-    newEvent.userIds.forEach((userId) => {
+    newEvent.users.forEach((userId) => {
       notifications.push({
-        userId: userId,
+        userId,
         eventId: addEvent.id,
       });
     });
@@ -89,7 +99,7 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
     });
   };
 
-  const handleUpdateEvent = async (updatedEvent: Event) => {
+  const handleUpdateEvent = async (updatedEvent: UpdateEvent) => {
     await EventService.updateEvent(updatedEvent);
     const fetchedEvent = await EventService.getEvents(token);
     setEvents(fetchedEvent);
@@ -156,12 +166,13 @@ const Calendar: React.FC<WeekProps> = ({ currentDate, view }) => {
       {modalData.isOpen && user && (
         <EventModal
           eventDate={modalData.date}
-          userId={user.id}
+          user={user}
           handleAddEvent={handleAddEvent}
           handleUpdateEvent={handleUpdateEvent}
           handleRDeleteEvent={handleRDeleteEvent}
           handleCloseModal={handleCloseModal}
           eventToUpdate={eventToUpdate}
+          users={users}
         />
       )}
     </div>

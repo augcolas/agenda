@@ -1,3 +1,5 @@
+import { type UserInterface } from "../interfaces/user.interface";
+
 export const createUserService = async (
   email: string,
   password: string,
@@ -12,15 +14,12 @@ export const createUserService = async (
     });
 
     if (response.ok) {
-      // Si la réponse est réussie, retourne un message de succès
       return "User created successfully";
     } else {
-      // Si la réponse n'est pas réussie, retourne l'erreur du serveur
       const errorData = await response.json();
       return `Error: ${errorData.message || "Unknown error"}`;
     }
   } catch (error) {
-    // Si une erreur de réseau ou autre se produit
     return `Network error: ${error instanceof Error ? error.message : "Unknown error"}`;
   }
 };
@@ -70,6 +69,29 @@ export const logoutUserService = async (token: string): Promise<void> => {
     }
   } catch (error) {
     console.error("Error logging out the user:", error);
+    throw error;
+  }
+}
+
+export const getUsersService = async (token: string): Promise<UserInterface[]> => {
+  try {
+    const response = await fetch("http://localhost:3000/users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP Error: ${response.status} - ${response.statusText}`,
+      );
+    }
+
+    const data = await response.json();
+    const users: UserInterface[] = data.data;
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
     throw error;
   }
 }

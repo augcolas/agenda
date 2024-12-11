@@ -1,57 +1,63 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
-import { type Event } from "../../models/Event";
+import { type UserInterface } from "../../interfaces/user.interface";
 import "./EventModal.css";
+import { type AddEvent, type Event, type UpdateEvent } from "../../models/Event";
 
 interface EventModalProps {
   eventDate: Date;
   eventToUpdate: Event | null;
-  handleAddEvent: (event: Event) => void;
+  handleAddEvent: (event: AddEvent) => void;
   handleCloseModal: () => void;
   handleRDeleteEvent: (eventId: number) => void;
-  handleUpdateEvent: (event: Event) => void;
-  userId: number;
+  handleUpdateEvent: (event: UpdateEvent) => void;
+  user: UserInterface;
+  users: UserInterface[];
 }
 
 const EventModal: React.FC<EventModalProps> = ({
-  userId,
   eventDate,
+  eventToUpdate,
   handleAddEvent,
-  handleUpdateEvent,
-  handleRDeleteEvent,
   handleCloseModal,
-  eventToUpdate
+  handleRDeleteEvent,
+  handleUpdateEvent,
+  user,
+  users,
 }) => {
   const [title, setTitle] = useState<string>(eventToUpdate ? eventToUpdate.title : "");
   const [description, setDescription] = useState<string>(eventToUpdate ? eventToUpdate.description : "");
-  const [additionalUserId, setAdditionalUserId] = useState<string>("");
-  const [userIds, setUserIds] = useState<number[]>(
-    eventToUpdate ? eventToUpdate.userIds : [userId]
+  const [eventUsers, setEventUsers] = useState<UserInterface[]>(
+    eventToUpdate ? eventToUpdate.users : [user]
   );
+  const [selectedUser, setSelectedUser] = useState<UserInterface | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const availableUsers = users.filter(
+    (filteredUser) =>
+      filteredUser.id !== user.id &&
+      !eventUsers.some((eventUser) => eventUser.id === filteredUser.id)
+  );
+
   const handleAddUser = () => {
-    const id = Number.parseInt(additionalUserId, 10);
-    if (Number.isNaN(id)) {
-      setError("L'ID utilisateur doit être un nombre.");
+    if (!selectedUser) return;
+
+    if (eventUsers.some((eventUser) => eventUser.id === selectedUser.id)) {
+      setError("Cet utilisateur est déjà dans la liste.");
       return;
     }
-    if (userIds.includes(id)) {
-      setError("L'utilisateur est déjà ajouté.");
-      return;
-    }
-    setUserIds([...userIds, id]);
-    setAdditionalUserId("");
-    setError(null);
+
+    setEventUsers((previousUsers) => [...previousUsers, selectedUser]);
+    setSelectedUser(null);
   };
 
-  const handleSubmit = (deleteEvent : boolean) : void => {
-
-    if(deleteEvent && eventToUpdate?.id){
+  const handleSubmit = (deleteEvent: boolean): void => {
+    if (deleteEvent && eventToUpdate?.id) {
       handleRDeleteEvent(eventToUpdate?.id);
       handleCloseModal();
-      return
+      return;
     }
+
     if (!title.trim()) {
       setError("Le titre est obligatoire.");
       return;
@@ -61,19 +67,29 @@ const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
-    const newEvent: Event = {
+    const newEvent: AddEvent = {
       date: eventDate,
       title,
       description,
-      userIds,
+      users: eventUsers.map((eventUser) => eventUser.id),
     };
 
-    if(eventToUpdate?.id) {
-      handleUpdateEvent({...newEvent, id: eventToUpdate.id});
-    }else{
+    if (eventToUpdate?.id) {
+      handleUpdateEvent({ ...newEvent, id: eventToUpdate.id });
+    } else {
       handleAddEvent(newEvent);
     }
     handleCloseModal();
+  };
+
+  const handleRemoveUser = (userToRemove: UserInterface) => {
+    setEventUsers(eventUsers.filter((eventUser) => eventUser.id !== userToRemove.id));
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedUserId = Number.parseInt(event.target.value, 10);
+    const selected = users.find((selectUser) => selectUser.id === selectedUserId) ?? null;
+    setSelectedUser(selected);
   };
 
   return (
@@ -92,7 +108,7 @@ const EventModal: React.FC<EventModalProps> = ({
           <label className="modal-label">Titre:</label>
           <input
             type="text"
-            value={ title }
+            value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Titre de l'événement"
             className="modal-input"
@@ -109,33 +125,45 @@ const EventModal: React.FC<EventModalProps> = ({
           />
         </div>
 
-        <div className="modal-field">
-          <label className="modal-label">Ajouter un utilisateur (ID):</label>
+        <div className="modal-field-full">
+          <label className="modal-label">Ajouter un utilisateur:</label>
           <div className="modal-user-add">
-            <input
-              type="text"
-              value={additionalUserId}
-              onChange={(event) => setAdditionalUserId(event.target.value)}
-              placeholder="ID utilisateur"
-              className="modal-input"
-            />
-            <button type="button" onClick={handleAddUser} className="modal-add-btn">
-              Ajouter
-            </button>
+            {availableUsers.length > 0 ? (
+              <Fragment>
+                <select
+                  name="users"
+                  id="users"
+                  onChange={handleChange}
+                  value={selectedUser?.id ?? ""}
+                >
+                  <option value="">Sélectionner un utilisateur</option>
+                  {availableUsers.map((displayedUser) => (
+                    <option key={displayedUser.id} value={displayedUser.id}>
+                      {displayedUser.email}
+                    </option>
+                  ))}
+                </select>
+                <button type="button" onClick={handleAddUser} className="modal-add-btn">
+                  Ajouter
+                </button>
+              </Fragment>
+            ) : (
+              <span className="modal-no-users">Aucun utilisateur disponible</span>
+            )}
+
           </div>
         </div>
 
         <div className="modal-participants">
           <h4>Participants:</h4>
           <ul className="modal-participants-list">
-            {userIds.map((id) => (
-              <li key={id} className="modal-participant">
-                Utilisateur ID: {id}
-
-                {id !== userId && (
+            {eventUsers.map((eventUser) => (
+              <li key={eventUser.id} className="modal-participant">
+                {eventUser.email}
+                {user.id !== eventUser.id && (
                   <button
                     type="button"
-                    onClick={() => setUserIds(userIds.filter((userToFilterId) => userToFilterId !== id))}
+                    onClick={() => handleRemoveUser(eventUser)}
                     className="modal-remove-btn"
                   >
                     Supprimer
@@ -147,14 +175,11 @@ const EventModal: React.FC<EventModalProps> = ({
         </div>
 
         <button onClick={() => handleSubmit(false)} className="modal-submit-btn">
-          {eventToUpdate ? "Mettre a jour" : "Créer l Événement"}
+          {eventToUpdate ? "Mettre à jour" : "Créer l'Événement"}
         </button>
 
         {eventToUpdate && (
-          <button
-            onClick={() => handleSubmit(true)}
-            className="modal-delete-btn"
-          >
+          <button onClick={() => handleSubmit(true)} className="modal-delete-btn">
             Supprimer l&apos;événement
           </button>
         )}

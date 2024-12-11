@@ -42,10 +42,8 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
 
   const login = (storedToken: string) => {
     try {
-      // Decode the token and set user
       decodeAndSetUser(storedToken);
 
-      // Store the token in localStorage
       localStorage.setItem('authToken', storedToken);
       setToken(storedToken);
     } catch (error) {
@@ -54,12 +52,10 @@ export const AuthProvider: React.FC<{ readonly children: ReactNode }> = ({ child
     }
   };
 
-  // Logout function
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
 
-    // Clear the token from localStorage
     localStorage.removeItem('authToken');
   };
 

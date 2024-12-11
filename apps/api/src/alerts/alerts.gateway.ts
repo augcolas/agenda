@@ -23,7 +23,6 @@ export class SocketEvents {
   async handleDisconnect(client: Socket) {
     console.log(`client disconnected: ${client.id}`);
     try {
-      // Traiter toutes les promesses en parallèle avec Promise.all
       await Promise.all(
         Array.from(client.rooms).map(async (room) => {
           try {
@@ -44,7 +43,7 @@ export class SocketEvents {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      await client.join(roomId); // Attendre la résolution si asynchrone
+      await client.join(roomId);
       console.log(`${client.id} joined room: ${roomId}`);
     } catch (error) {
       console.error(`Failed to join room ${roomId}:`, error);
@@ -54,7 +53,6 @@ export class SocketEvents {
   @SubscribeMessage('alert')
   handleEvent(@ConnectedSocket() client: Socket) {
     const roomId = client.id;
-    // Émission de l'alerte en gérant explicitement la promesse
     this.server.to(roomId).emit('alert', {
       from: client.id,
       message: 'Alerte type à modifier !',
@@ -63,7 +61,6 @@ export class SocketEvents {
     console.log(`Alert sent`);
   }
 
-  // envoyer une notification à un utilisateur spécifique
   sendNotification(userId: number, message: string) {
     this.server.to(`user-${userId}`).emit('notification', message);
   }

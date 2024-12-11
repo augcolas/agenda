@@ -7,7 +7,6 @@ export interface EventCellProps {
 }
 
 export const EventCell = ({ event, setEventToUpdate  }: EventCellProps) => {
-
   return (
     <div className={"event"} style={{backgroundColor: "beige"}} onClick={() => setEventToUpdate(event)}>
       {event.title}
