@@ -194,7 +194,7 @@ export class AppProcessor extends WorkerHost {
       JSON.stringify({
         action,
         userId,
-        error: `All notifications removed from user ${redisKey}`,
+        message: `All notifications removed from user ${redisKey}`,
       }),
     );
   }
