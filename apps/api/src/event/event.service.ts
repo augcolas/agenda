@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
 import { CreateEventDto } from './dto/create-event.dto';
@@ -11,31 +12,78 @@ export class EventService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
+    private readonly userService: UserService,
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
-    const eventData = this.eventRepository.create(createEventDto);
-    return this.eventRepository.save(eventData);
+    const users = await Promise.all(
+        createEventDto.users.map(async (userId) => {
+            const user = await this.userService.findOne(userId);
+            if (!user) {
+                throw new HttpException(`User with ID ${userId} not found`, 404);
+            }
+            return user;
+        }),
+    );
+
+    const event = this.eventRepository.create({
+        ...createEventDto,
+        users,
+    });
+
+    await this.eventRepository.save(event)
+    return this.findOne(event.id, event.id);
   }
 
   async findAll(userId: number): Promise<Event[]> {
-    return this.eventRepository
-      .createQueryBuilder('event')
-      .where(':userId = ANY (event.userIds)', { userId })
-      .getMany();
-  }
+    try {
+      return await this.eventRepository
+        .createQueryBuilder('event')
+        .leftJoinAndSelect('event.users', 'user')
+        .select([
+          'event.id',
+          'event.date',
+          'event.title',
+          'event.description',
+          'user.id',
+          'user.email',
+        ])
+        .where((qb) => {
+          const subQuery = qb
+            .subQuery()
+            .select('eu.eventId')
+            .from('event_users_user', 'eu')
+            .where('eu.userId = :userId', { userId })
+            .getQuery();
 
+          return `event.id IN ${subQuery}`;
+        })
+        .getMany();
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('Internal Server Error', 500);
+    }
+  }
   async findOne(userId: number, id: number): Promise<Event> {
-    const EventData = await this.eventRepository
+    const eventData = await this.eventRepository
       .createQueryBuilder('event')
-      .where(':userId = ANY (event.userIds)', { userId })
-      .andWhere('event.id = :id', { id })
+      .leftJoinAndSelect('event.users', 'user')
+      .select([
+        'event.id',
+        'event.date',
+        'event.title',
+        'event.description',
+        'user.id',
+        'user.email',
+      ])
+      .where('event.id = :id', { id })
       .getOne();
 
-    if (!EventData) {
+    if (!eventData) {
       throw new HttpException('Event Not Found', 404);
     }
-    return EventData;
+
+    return eventData;
   }
 
   async update(
@@ -43,11 +91,25 @@ export class EventService {
     id: number,
     updateEventDto: UpdateEventDto,
   ): Promise<Event> {
-    const eventData = this.eventRepository.merge(
-      await this.findOne(userId, id),
-      updateEventDto,
-    );
-    return this.eventRepository.save(eventData);
+      const existingEvent = await this.findOne(userId, id);
+
+      const users = await Promise.all(
+          updateEventDto.users.map(async (updateUserId) => {
+              const user = await this.userService.findOne(updateUserId);
+              if (!user) {
+                  throw new HttpException(`User with ID ${updateUserId} not found`, 404);
+              }
+              return user;
+          }),
+      );
+
+      existingEvent.users = users;
+      existingEvent.date = updateEventDto.date || existingEvent.date;
+      existingEvent.title = updateEventDto.title || existingEvent.title;
+      existingEvent.description = updateEventDto.description || existingEvent.description;
+
+      await this.eventRepository.save(existingEvent);
+      return this.findOne(userId, id);
   }
 
   async remove(userId: number, id: number): Promise<Event> {

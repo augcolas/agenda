@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:3000/events";
 
-import { type Event } from "../models/Event";
+import { type AddEvent, type Event, type UpdateEvent } from "../models/Event";
 
 export const EventService = {
   async getEvents(token: string): Promise<Event[]> {
@@ -14,7 +14,7 @@ export const EventService = {
     return response.json();
   },
 
-  async addEvent(event: Event) {
+  async addEvent(event: AddEvent) {
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -38,7 +38,7 @@ export const EventService = {
     return response.json();
   },
 
-  async updateEvent(event: Event) {
+  async updateEvent(event: UpdateEvent) {
     const response = await fetch(`${API_BASE_URL}/${event.id}`, {
       method: "PATCH",
       headers: {

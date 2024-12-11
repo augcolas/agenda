@@ -2,7 +2,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { type Repository } from 'typeorm';
+import { User } from 'src/user/entities/user';
+import { type DeepPartial, type Repository } from 'typeorm';
 
 import { Event } from './entities/event';
 import { EventService } from './event.service';
@@ -10,9 +11,9 @@ import { EventService } from './event.service';
 describe('EventService', () => {
   let service: EventService;
   let repo: Repository<Event>;
+  let userRepo: Repository<User>;
 
   beforeAll(async () => {
-    // Configuration du module de test
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({
@@ -24,29 +25,51 @@ describe('EventService', () => {
           port: Number.parseInt(process.env.POSTGRES_PORT),
           password: process.env.POSTGRES_PASSWORD,
           username: process.env.POSTGRES_USER,
-          autoLoadEntities: true, // typeorm loads entities from this directory
+          autoLoadEntities: true,
           database: process.env.POSTGRES_TEST_DB,
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([Event]), // Injecte le repository pour l'entité Event
+        TypeOrmModule.forFeature([Event]),
       ],
       providers: [EventService],
     }).compile();
 
     service = module.get<EventService>(EventService);
     repo = module.get<Repository<Event>>(getRepositoryToken(Event));
+    userRepo = module.get<Repository<User>>(getRepositoryToken(User));
+
+    /* eslint-disable sonarjs/no-hardcoded-credentials */
+    await userRepo.save([
+      {
+        email: 'test@gmail.com',
+        password: 'defaultTestPassword',
+        areNotificationsEnabled: true,
+        role: 'USER',
+      },
+      {
+        email: 'test2@gmail.com',
+        password: 'defaultTestPassword',
+        areNotificationsEnabled: true,
+        role: 'USER',
+      },
+    ] as DeepPartial<User>[]);
+    /* eslint-enable sonarjs/no-hardcoded-credentials */
+
   });
 
   beforeEach(async () => {
+    const user1 = await userRepo.findOneBy({ id: 1 });
+    const user2 = await userRepo.findOneBy({ id: 2 });
+
     await repo.save([
       {
-        userIds: [1],
+        users: [user1],
         description: 'Test Event',
         title: 'Test Event',
         date: new Date().toISOString(),
       },
       {
-        userIds: [2],
+        users: [user2],
         description: 'Test Event Not Owned',
         title: 'Test Event Not Owned',
         date: new Date().toISOString(),
@@ -64,7 +87,7 @@ describe('EventService', () => {
     const events = await service.findAll(1);
 
     expect(events).toEqual([
-      { id: expect.any(Number), userIds: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) }
+      { id: expect.any(Number), users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) }
     ]);
   });
 
@@ -79,7 +102,7 @@ describe('EventService', () => {
     const userId = 1;
     const eventId = 1;
     const events = await service.findOne(userId, eventId);
-    expect(events).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
+    expect(events).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
   });
 
   it('should throw an error if event not found', async () => {
@@ -91,13 +114,13 @@ describe('EventService', () => {
   // --- Tests create ---
   it('should create an event', async () => {
     const event = await service.create({
-      userIds: [1],
+      users: [1],
       description: 'Test Event 2',
       title: 'Test Event 2',
       date: new Date().toISOString(),
     });
 
-    expect(event).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event 2', title: 'Test Event 2', date: expect.any(String) });
+    expect(event).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event 2', title: 'Test Event 2', date: expect.any(String) });
   });
 
   // --- Tests update ---
@@ -105,12 +128,12 @@ describe('EventService', () => {
     const userId = 1;
     const eventId = 1;
     const event = await service.update(userId, eventId, {
-      userIds: [1],
+      users: [1],
       description: 'Test Event Updated',
       title: 'Test Event Updated',
     });
 
-    expect(event).toEqual({ id: expect.any(Number), userIds: [1], description: 'Test Event Updated', title: 'Test Event Updated', date: expect.any(String) });
+    expect(event).toEqual({ id: expect.any(Number), users: [1], description: 'Test Event Updated', title: 'Test Event Updated', date: expect.any(String) });
   });
 
   // --- Tests remove ---
@@ -119,6 +142,6 @@ describe('EventService', () => {
     const eventId = 1;
     const event = await service.remove(userId, eventId);
 
-    expect(event).toEqual({ id:undefined, userIds: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
+    expect(event).toEqual({ id:undefined, users: [1], description: 'Test Event', title: 'Test Event', date: expect.any(String) });
   });
 });
