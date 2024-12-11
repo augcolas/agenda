@@ -1,13 +1,12 @@
 
-/* Conteneur du fond flouté */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Couleur de fond semi-transparent */
-  backdrop-filter: blur(5px); /* Effet de flou */
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,7 +24,8 @@
     width: 100%;
   }
 
-  .modal-delete-btn{
+  .modal-delete-btn,
+  .modal-remove-btn{
     background: #ff0000;
     color: #fff;
   }
@@ -34,15 +34,13 @@
     margin-bottom: 20px;
   }
 
-  .modal-user-add button{margin: 0 0 0 5px;}
-
 }
 
 .modal-field,
-.modal-participant,
-.modal-user-add{
+.modal-participant{
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 5px;
 
   > *{
@@ -50,7 +48,28 @@
   }
 }
 
-/* Conteneur de la modale */
+.modal-field-full{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+
+.modal-field input,
+.modal-field textarea,
+.modal-field-full select{
+  padding: 5px 10px;
+}
+
+.modal-user-add{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  button{margin: 0;}
+}
+
 .modal-content {
   background: #fff;
   border-radius: 10px;
@@ -62,7 +81,6 @@
   position: relative;
 }
 
-/* Animation d'apparition */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -74,7 +92,6 @@
   }
 }
 
-/* Bouton pour fermer */
 .modal-close-btn {
   position: absolute;
   top: 10px;

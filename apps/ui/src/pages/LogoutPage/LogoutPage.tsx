@@ -13,13 +13,13 @@ const LogoutPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    logout(); // Déconnecte l'utilisateur
+    logout();
 
     logoutUserService(token).catch((error) => {
       console.error('Error logging out the user:', error);
     });
 
-    navigate('/'); // Redirige vers la page de connexion
+    navigate('/');
   }, [logout, navigate, token]);
 
   return (

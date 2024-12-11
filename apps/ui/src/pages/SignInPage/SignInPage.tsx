@@ -27,7 +27,7 @@ const SignInPage: React.FC = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      setMessage('An error occurred during registration. Please try again.'); // Gérer l'erreur
+      setMessage('An error occurred during registration. Please try again.');
       console.error('Registration error:', error);
     }
   };
@@ -35,7 +35,7 @@ const SignInPage: React.FC = () => {
   return (
     <div>
       <h1>Inscription</h1>
-      
+
       <SignInForm onSubmit={handleFormSubmit} />
 
       {isLoading && <p>Chargement...</p>}
