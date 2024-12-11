@@ -21,7 +21,6 @@ export class SocketEvents {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`client disconnected: ${client.id}`);
     try {
       await Promise.all(
         Array.from(client.rooms).map(async (room) => {
@@ -44,7 +43,6 @@ export class SocketEvents {
   ) {
     try {
       await client.join(roomId);
-      console.log(`${client.id} joined room: ${roomId}`);
     } catch (error) {
       console.error(`Failed to join room ${roomId}:`, error);
     }
