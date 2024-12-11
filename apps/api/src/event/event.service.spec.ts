@@ -50,13 +50,16 @@ describe('EventService', () => {
       {
         email: 'test@gmail.com',
         password: 'defaultTestPassword',
-        areNotificationsEnabled: true,
         role: 'USER',
       },
       {
         email: 'test2@gmail.com',
         password: 'defaultTestPassword',
-        areNotificationsEnabled: true,
+        role: 'USER',
+      },
+      {
+        email: 'test3@gmail.com',
+        password: 'defaultTestPassword',
         role: 'USER',
       },
     ] as DeepPartial<User>[]);
@@ -67,8 +70,14 @@ describe('EventService', () => {
       {
         users: [user1],
         description: 'Test Event',
-        title: 'Test Event',
+        title: 'Test Event User 1',
         date: '2024-01-01T00:00:00.000Z',
+      },
+      {
+        users: [user2],
+        description: 'Test Event',
+        title: 'Test Event User 2',
+        date: '2024-01-03T00:00:00.000Z',
       },
       {
         users: [user1, user2],
@@ -87,11 +96,27 @@ describe('EventService', () => {
         date: '2024-01-01T00:00:00.000Z',
         description: 'Test Event',
         id: 1,
-        title: 'Test Event',
+        title: 'Test Event User 1',
         users: [
           {
             email: 'test@gmail.com',
             id: 1,
+          },
+        ],
+      },
+      {
+        date: '2024-01-02T00:00:00.000Z',
+        description: 'Test Event Multiple Users',
+        id: 3,
+        title: 'Test Event Multiple Users',
+        users: [
+          {
+            email: 'test@gmail.com',
+            id: 1,
+          },
+          {
+            email: 'test2@gmail.com',
+            id: 2,
           },
         ],
       },
@@ -112,7 +137,7 @@ describe('EventService', () => {
       date: '2024-01-01T00:00:00.000Z',
       description: 'Test Event',
       id: 1,
-      title: 'Test Event',
+      title: 'Test Event User 1',
       users: [
         {
           email: 'test@gmail.com',
@@ -141,7 +166,7 @@ describe('EventService', () => {
     expect(event).toEqual({
       date: '2024-01-03T00:00:00.000Z',
       description: 'Test Event 2',
-      id: 3,
+      id: 4,
       title: 'Test Event 2',
       users: [
         {
@@ -183,7 +208,7 @@ describe('EventService', () => {
     expect(event).toEqual({
       date: '2024-01-01T00:00:00.000Z',
       description: 'Test Event',
-      title: 'Test Event',
+      title: 'Test Event User 1',
       users: [
         {
           email: 'test@gmail.com',

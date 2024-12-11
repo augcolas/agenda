@@ -12,9 +12,6 @@ export class User {
   password: string;
 
   @Column()
-  areNotificationsEnabled: boolean;
-
-  @Column()
   role: Role;
 
   @Column({ nullable: true })

@@ -32,7 +32,7 @@ export class EventService {
     });
 
     await this.eventRepository.save(event);
-    return this.findOne(event.id, event.id);
+    return this.findOne(createEventDto.users[0], event.id);
   }
 
   async findAll(userId: number): Promise<Event[]> {
