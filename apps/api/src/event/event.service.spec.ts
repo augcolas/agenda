@@ -1,32 +1,44 @@
-import { ConfigModule } from '@nestjs/config';
-import { Test, type TestingModule } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { type DeepPartial, type Repository } from 'typeorm';
+/* eslint-disable sonarjs/no-hardcoded-credentials */
+import {ConfigModule} from '@nestjs/config';
+import {Test, type TestingModule} from '@nestjs/testing';
+import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
+import {GenericContainer, type StartedTestContainer} from 'testcontainers';
+import {type DeepPartial, type Repository} from 'typeorm';
 
-import { User } from '../user/entities/user';
-import { UserService } from '../user/user.service';
-import { Event } from './entities/event';
-import { EventService } from './event.service';
+import {User} from '../user/entities/user';
+import {UserService} from '../user/user.service';
+import {Event} from './entities/event';
+import {EventService} from './event.service';
 
 describe('EventService', () => {
   let service: EventService;
   let repo: Repository<Event>;
   let userRepo: Repository<User>;
+  let container: StartedTestContainer;
+  let databaseUrl: string;
 
   beforeAll(async () => {
+    container = await new GenericContainer('postgres')
+      .withExposedPorts(5432)
+      .withEnvironment({
+        POSTGRES_USER: 'testuser',
+        POSTGRES_PASSWORD: 'testpassword',
+        POSTGRES_DB: 'testdb',
+      })
+      .start();
+
+    const host = container.getHost();
+    const port = container.getMappedPort(5432);
+
+    databaseUrl = `postgres://testuser:testpassword@${host}:${port}/testdb`;
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        await ConfigModule.forRoot({
-          envFilePath: '../../.env',
-        }),
+        ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',
-          host: process.env.POSTGRES_HOST,
-          port: Number.parseInt(process.env.POSTGRES_TEST_PORT),
-          password: process.env.POSTGRES_PASSWORD,
-          username: process.env.POSTGRES_USER,
+          url: databaseUrl,
           autoLoadEntities: true,
-          database: process.env.POSTGRES_TEST_DB,
           synchronize: true,
         }),
         TypeOrmModule.forFeature([Event, User]),
@@ -37,7 +49,7 @@ describe('EventService', () => {
     service = module.get<EventService>(EventService);
     repo = module.get<Repository<Event>>(getRepositoryToken(Event));
     userRepo = module.get<Repository<User>>(getRepositoryToken(User));
-  });
+  }, 30_000);
 
   beforeEach(async () => {
     await repo.delete({});
@@ -45,7 +57,6 @@ describe('EventService', () => {
     await repo.query(`ALTER SEQUENCE user_id_seq RESTART WITH 1`);
     await repo.query(`ALTER SEQUENCE event_id_seq RESTART WITH 1`);
 
-    /* eslint-disable sonarjs/no-hardcoded-credentials */
     await userRepo.save([
       {
         email: 'test@gmail.com',
@@ -124,7 +135,7 @@ describe('EventService', () => {
   });
 
   it('should return empty array if no events for the user', async () => {
-    const events = await service.findAll(3); // User 3 has no events
+    const events = await service.findAll(3);
 
     expect(events).toEqual([]);
   });
