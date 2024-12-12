@@ -6,7 +6,7 @@ export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendResetPasswordEmail(email: string, resetPasswordToken: string) {
-    const url: string = `${process.env.FRONT_URL}?token=${resetPasswordToken}`;
+    const url: string = `${process.env.FRONT_URL}/reset-password/${resetPasswordToken}`;
 
     return this.mailerService.sendMail({
       to: email,

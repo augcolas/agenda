@@ -156,12 +156,15 @@ describe('EventService', () => {
   });
 
   it('should create an event', async () => {
-    const event = await service.create({
-      users: [1],
-      description: 'Test Event 2',
-      title: 'Test Event 2',
-      date: '2024-01-03T00:00:00.000Z',
-    });
+    const event = await service.create(
+      {
+        users: [1],
+        description: 'Test Event 2',
+        title: 'Test Event 2',
+        date: '2024-01-03T00:00:00.000Z',
+      },
+      1,
+    );
 
     expect(event).toEqual({
       date: '2024-01-03T00:00:00.000Z',

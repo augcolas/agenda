@@ -273,3 +273,15 @@ table {
   vertical-align: top;
   margin-bottom: var(--spacer-medium);
 }
+
+.auth-form {
+  h1 {
+    text-align: center;
+    margin-bottom: var(--spacer-medium);
+  }
+
+  p {
+    text-align: center;
+    margin-bottom: var(--spacer-medium);
+  }
+}

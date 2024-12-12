@@ -15,16 +15,20 @@ export class EventService {
     private readonly userService: UserService,
   ) {}
 
-  async create(createEventDto: CreateEventDto): Promise<Event> {
+  async create(createEventDto: CreateEventDto, userId: number): Promise<Event> {
     const users = await Promise.all(
-      createEventDto.users.map(async (userId) => {
-        const user = await this.userService.findOne(userId);
+      createEventDto.users.map(async (eventUserId) => {
+        const user = await this.userService.findOne(eventUserId);
         if (!user) {
-          throw new HttpException(`User with ID ${userId} not found`, 404);
+          throw new HttpException(`User with ID ${eventUserId} not found`, 404);
         }
         return user;
       }),
     );
+
+    if (!users.some((user) => user.id === userId)) {
+      throw new HttpException('User must be part of the event', 400);
+    }
 
     const event = this.eventRepository.create({
       ...createEventDto,
@@ -32,7 +36,7 @@ export class EventService {
     });
 
     await this.eventRepository.save(event);
-    return this.findOne(createEventDto.users[0], event.id);
+    return this.findOne(userId, event.id);
   }
 
   async findAll(userId: number): Promise<Event[]> {

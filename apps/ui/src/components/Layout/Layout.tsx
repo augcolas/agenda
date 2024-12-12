@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
       <main>{children}</main>
       <footer>
-        <p>&copy; 2021 - Agenda</p>
+        <p>&copy; 2024 - Agenda</p>
       </footer>
     </div>
   );

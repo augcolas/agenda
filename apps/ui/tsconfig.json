@@ -24,6 +24,7 @@
     "moduleResolution": "bundler",
     "rootDir": "./",
     "outDir": "./dist",
-    "allowJs": true
+    "allowJs": true,
+    "types": ["vite/client"]
   }
 }

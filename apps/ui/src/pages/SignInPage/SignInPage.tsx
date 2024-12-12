@@ -1,19 +1,19 @@
-import type React from 'react';
+import type React from "react";
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import SignInForm from '../../components/SignInForm/SignInForm';
-import { createUserService } from '../../services/user.service';
+import SignInForm from "../../components/SignInForm/SignInForm";
+import { createUserService } from "../../services/user.service";
 
 const SignInPage: React.FC = () => {
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const handleFormSubmit = async (email: string, password: string) => {
-    setMessage('');
+    setMessage("");
     setIsLoading(true);
 
     try {
@@ -22,18 +22,18 @@ const SignInPage: React.FC = () => {
       setIsLoading(false);
       setMessage(result);
 
-      if (result === 'User created successfully') {
-        navigate('/login');
+      if (result === "User created successfully") {
+        navigate("/login");
       }
     } catch (error) {
       setIsLoading(false);
-      setMessage('An error occurred during registration. Please try again.');
-      console.error('Registration error:', error);
+      setMessage("Une erreur est survenue lors de votre inscription.");
+      console.error("Registration error:", error);
     }
   };
 
   return (
-    <div>
+    <div className="auth-form">
       <h1>Inscription</h1>
 
       <SignInForm onSubmit={handleFormSubmit} />
