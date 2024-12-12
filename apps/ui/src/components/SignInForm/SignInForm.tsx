@@ -14,8 +14,6 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [error, setError] = useState<string>('');
   const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-  console.log("ici")
-
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
     setError('');
@@ -31,7 +29,7 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!email || !password) {
       setError('Email et mot de passe sont requis');
       return;
@@ -43,7 +41,7 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit} className="login-form">
       <h2>Inscription</h2>
-      
+
       <div className="input-group">
         <label htmlFor="email">Email :</label>
         <input
