@@ -20,7 +20,6 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('ici')
     setPassword(event.target.value);
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z]).{8,}$/;
     setIsPasswordValid(passwordRegex.test(event.target.value));
