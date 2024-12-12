@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { SocketModule } from './alerts/alerts.module';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { EventModule } from './event/event.module';
 import { AuthGuard } from './guards/auth.guard';
@@ -46,7 +45,6 @@ import { UserModule } from './user/user.module';
   ],
   controllers: [],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

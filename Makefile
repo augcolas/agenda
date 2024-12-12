@@ -61,7 +61,10 @@ lint:
 
 .PHONY: tests
 tests:
-	@echo "starting docker compose"
-	@docker compose -f docker-compose.dev.yml up -d
 	@echo "testing"
 	@pnpm --filter api run test
+
+.PHONY: tests-coverage
+tests-coverage:
+	@echo "testing"
+	@pnpm --filter api test:cov
