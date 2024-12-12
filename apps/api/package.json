@@ -96,6 +96,8 @@
       "\\.decorator\\.ts$",
       "\\.gateway\\.ts$",
       "\\.interceptor\\.ts$",
+      "\\.guard\\.ts$",
+      "\\.controller\\.ts$",
       "main.ts"
     ]
   }

@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 /* eslint-disable sonarjs/no-hardcoded-credentials */
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -83,6 +84,22 @@ describe('UserService', () => {
     });
   });
 
+  it('should fail on user creation du to invalid password format', async () => {
+    await expect(
+      userService.create({
+        email: 'test@test.fr',
+        password: 'invalidPassword',
+        role: Role.USER,
+        events: null,
+      }),
+    ).rejects.toThrow(
+      new HttpException(
+        'Password must contain at least 8 characters, 1 digit, 1 lowercase letter, and 1 uppercase letter',
+        400,
+      ),
+    );
+  });
+
   it('should return all users', async () => {
     await userRepo.save([
       {
@@ -159,6 +176,12 @@ describe('UserService', () => {
     });
   });
 
+  it('should fail when looking for one specific user not existing', async () => {
+    await expect(userService.findOne(1)).rejects.toThrow(
+      new HttpException('User Not Found', 404),
+    );
+  });
+
   it('should update one user', async () => {
     await userRepo.save([
       {
@@ -186,6 +209,19 @@ describe('UserService', () => {
       resetPasswordToken: null,
       role: 'ADMIN',
     });
+  });
+
+  it('should fail on user update du to invalid password format', async () => {
+    await expect(
+      userService.update(1, {
+        password: 'invalidPassword',
+      }),
+    ).rejects.toThrow(
+      new HttpException(
+        'Password must contain at least 8 characters, 1 digit, 1 lowercase letter, and 1 uppercase letter',
+        400,
+      ),
+    );
   });
 
   it('should delete one user', async () => {

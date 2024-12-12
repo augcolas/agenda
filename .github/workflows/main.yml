@@ -1,4 +1,4 @@
-name: Lint Code
+name: Main Pipeline
 
 on:
   pull_request:
@@ -27,3 +27,6 @@ jobs:
 
       - name: Run lint
         run: make lint
+
+      - name: Run tests
+        run: make tests
