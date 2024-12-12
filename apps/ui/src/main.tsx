@@ -25,11 +25,46 @@ const Main: React.FC = () => (
         </ProtectedRoute>
       }
     />
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/logout" element={<LogoutPage />} />
-    <Route path="/register" element={<SignInPage />} />
-    <Route path="/forget-password" element={<ForgetPasswordPage />} />
-    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+    <Route
+      path="/login"
+      element={
+        <ProtectedRoute reverse={true}>
+          <LoginPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/logout"
+      element={
+        <ProtectedRoute>
+          <LogoutPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/register"
+      element={
+        <ProtectedRoute reverse={true}>
+          <SignInPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/forget-password"
+      element={
+        <ProtectedRoute reverse={true}>
+          <ForgetPasswordPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/reset-password/:token"
+      element={
+        <ProtectedRoute reverse={true}>
+          <ResetPasswordPage />
+        </ProtectedRoute>
+      }
+    />
     <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );
