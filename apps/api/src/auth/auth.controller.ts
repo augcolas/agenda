@@ -7,7 +7,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
 import { Observable } from 'rxjs';
 
 import { Public } from '../decorators/public.decorator';
@@ -65,10 +64,9 @@ export class AuthController {
     @Body() password: PasswordDto,
     @Req() req: Request,
   ): Observable<BooleanResponse> {
-    const hashedPassword = bcrypt.hashSync(password.password, 10);
     return this.authService.updateUserByResetToken({
       token: req['token'],
-      password: hashedPassword,
+      password: password.password,
     });
   }
 }
