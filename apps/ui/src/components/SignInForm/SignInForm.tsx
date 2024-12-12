@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import './SignInForm.css';
 
@@ -12,6 +12,9 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+
+  console.log("ici")
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -19,7 +22,10 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('ici')
     setPassword(event.target.value);
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z]).{8,}$/;
+    setIsPasswordValid(passwordRegex.test(event.target.value));
     setError('');
   };
 
@@ -62,8 +68,22 @@ const SignInForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
 
       {error && <p className="error">{error}</p>}
 
+      {!isPasswordValid && (
+        <Fragment >
+          <p className="error-message">
+            Le mot de passe doit contenir au moins :
+          </p>
+          <ul>
+            <li>8 caractères</li>
+            <li>1 chiffre</li>
+            <li>1 lettre minuscule</li>
+            <li>1 lettre majuscule</li>
+          </ul>
+        </Fragment>
+      )}
+
       <div className="submit-group">
-        <button type="submit">S inscrire</button>
+        <button disabled={!isPasswordValid || password.length === 0} type="submit">S inscrire</button>
       </div>
     </form>
   );
