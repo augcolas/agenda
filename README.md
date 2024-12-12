@@ -39,7 +39,8 @@ _Note_ : Back/API is entrypoint to access Auth or Jobrunner microservices, so it
 ### Tests
 
 Unit tests are present in this repository
-To run them, execute  `docker compose -f docker-compose.dev.yml up -d && pnpm --filter api run test` or `make tests`
+To run them, execute  `pnpm --filter api run test` or `make tests`
+To run them and display coverage, execute  `pnpm --filter api test:cov` or `make tests-coverage`
 
 ## Port used
 
