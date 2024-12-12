@@ -1,14 +1,14 @@
 /* eslint-disable sonarjs/no-hardcoded-credentials */
-import {ConfigModule} from '@nestjs/config';
-import {Test, type TestingModule} from '@nestjs/testing';
-import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import {GenericContainer, type StartedTestContainer} from 'testcontainers';
-import {type DeepPartial, type Repository} from 'typeorm';
+import { GenericContainer, type StartedTestContainer } from 'testcontainers';
+import { type DeepPartial, type Repository } from 'typeorm';
 
-import {Event} from '../event/entities/event';
-import {Role, User} from './entities/user';
-import {UserService} from './user.service';
+import { Event } from '../event/entities/event';
+import { Role, User } from './entities/user';
+import { UserService } from './user.service';
 
 jest.mock('bcrypt', () => ({ hash: jest.fn() }));
 
@@ -60,7 +60,7 @@ describe('UserService', () => {
   });
 
   it('should create a user and validate the password', async () => {
-    const password = 'fakePassword';
+    const password = 'fakePassword1!';
     const hashedPassword = 'hashedFakePassword';
 
     (bcrypt.hash as jest.Mock).mockImplementation(() => {
@@ -169,12 +169,12 @@ describe('UserService', () => {
     ] as DeepPartial<User>);
 
     (bcrypt.hash as jest.Mock).mockImplementation(() => {
-      return 'updatedTestPassword';
+      return 'updatedTestPassword!1';
     });
 
     const user = await userService.update(1, {
       email: 'updatedEmail@gmail.com',
-      password: 'updatedTestPassword',
+      password: 'updatedTestPassword!1',
       role: Role.ADMIN,
     });
 
@@ -182,7 +182,7 @@ describe('UserService', () => {
       email: 'updatedEmail@gmail.com',
       events: [],
       id: 1,
-      password: 'updatedTestPassword',
+      password: 'updatedTestPassword!1',
       resetPasswordToken: null,
       role: 'ADMIN',
     });
@@ -198,7 +198,7 @@ describe('UserService', () => {
     ] as DeepPartial<User>);
 
     (bcrypt.hash as jest.Mock).mockImplementation(() => {
-      return 'updatedTestPassword';
+      return 'updatedTestPassword!1';
     });
 
     const user = await userService.remove(1);
