@@ -12,9 +12,18 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    ) {}
+  ) {}
+
+  passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z]).{8,}$/;
 
   async create(createUserDto: CreateUserDto): Promise<User> {
+    if (!this.passwordRegex.test(createUserDto.password)) {
+      throw new HttpException(
+        'Password must contain at least 8 characters, 1 digit, 1 lowercase letter, and 1 uppercase letter',
+        400,
+      );
+    }
+
     createUserDto.password = await bcrypt.hash(
       createUserDto.password,
       +process.env.BCRYPT_PASSWORD_SALT,
@@ -27,7 +36,7 @@ export class UserService {
   async findAll(): Promise<User[]> {
     try {
       return await this.userRepository.find();
-    }catch (error) {
+    } catch (error) {
       console.error(error);
       throw new HttpException('Internal Server Error', 500);
     }
@@ -58,6 +67,13 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const existingUser = await this.findOne(id);
     if (updateUserDto.password) {
+      if (!this.passwordRegex.test(updateUserDto.password)) {
+        throw new HttpException(
+          'Password must contain at least 8 characters, 1 digit, 1 lowercase letter, and 1 uppercase letter',
+          400,
+        );
+      }
+
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
         +process.env.BCRYPT_PASSWORD_SALT,
