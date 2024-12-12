@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -18,8 +19,13 @@ const ResetPasswordPage = () => {
       const resp = await resetPasswordService(password, token);
       setResponse(resp);
     } catch (error_) {
-      setError("Une erreur est survenue.");
-      console.error("Forget password failed:", error_);
+      if (error_ instanceof AxiosError) {
+        console.log(error_.response?.data.message);
+        setError(error_.response?.data.message);
+      } else {
+        setError("Une erreur est survenue.");
+        console.error("Forget password failed:", error_);
+      }
     }
   };
 
