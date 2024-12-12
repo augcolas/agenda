@@ -65,7 +65,6 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const existingUser = await this.findOne(id);
     if (updateUserDto.password) {
       if (!this.passwordRegex.test(updateUserDto.password)) {
         throw new HttpException(
@@ -80,6 +79,7 @@ export class UserService {
       );
     }
 
+    const existingUser = await this.findOne(id);
     const userData = this.userRepository.merge(existingUser, {
       ...updateUserDto,
     });
